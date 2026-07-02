@@ -1,0 +1,6 @@
+{
+  "title": "Analytics Dashboard Discrepancy & Video Views",
+  "category": "analytics",
+  "content": "If analytics dashboard shows discrepancies (e.g. email clicks don't match video views): 1) Ensure Infosys tracking JS is not blocked by viewer adblockers. 2) Views under 3 seconds are filtered out by default to prevent bot counting. 3) Real-time sync can have up to 15 minutes lag. For verified bot traffic, we filter impressions. Detailed CSV reports are updated hourly and can be downloaded from Campaign > Analytics > Export Logs. Custom tracking tags (UTM parameters) must be appended to landing page URLs.",
+  "keywords": ["analytics", "views", "discrepancy", "clicks", "tracking", "bot traffic"]
+}

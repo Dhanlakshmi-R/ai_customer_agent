@@ -1,0 +1,6 @@
+{
+  "title": "UPI Payment & Refund Process",
+  "category": "billing",
+  "content": "We accept UPI payments via Google Pay, PhonePe, Paytm, BHIM, and all UPI apps. UPI ID format: username@bankname. For failed UPI payments: Amount is auto-refunded within 24-48 hours to source account. Check transaction status in Payment History. UPI ref number is required for tracking failed transactions. Maximum UPI transaction limit: Rs 1,00,000 per transaction (RBI guideline). For amounts above Rs 1 lakh, use NetBanking or Debit Card. Refund timeline for UPI: 24-48 hours for failed transactions, 5-7 business days for cancellation refunds. If refund not received: 1) Check UPI app transaction history. 2) Contact your bank with UPI ref number. 3) If still not resolved, raise a complaint on NPCI portal (complaints.npci.org.in). For subscription via UPI auto-pay: Manage in Billing > Auto-Pay > UPI Settings. Cancel auto-pay anytime, effective from next billing cycle.",
+  "keywords": ["UPI", "Google Pay", "PhonePe", "Paytm", "BHIM", "payment", "failed", "refund", "transaction"]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "role": "customer",
+    "content": "I wanted to upgrade to Infosys Enterprise and your payment gateway charged me twice! Rs 15,000 was deducted twice. And my dashboard still shows I'm on the basic plan!"
+  },
+  {
+    "role": "agent",
+    "content": "Oh no, I'm so sorry to hear that! That is completely unacceptable. I understand how frustrating it is to be double charged and not see your upgrade active. Let me look into your billing account right away and resolve this for you."
+  },
+  {
+    "role": "customer",
+    "content": "Yes please. I ordered the upgrade for Rs 15,000. The app showed transaction error, so I retried, and then it said success. But I received two SMS messages from my bank for Rs 15,000 each. Rs 30,000 deducted total."
+  },
+  {
+    "role": "agent",
+    "content": "I can see the account details, and you're absolutely right - this is a gateway double-capture issue during the transaction retry. This is not acceptable. I have manually provisioned your Enterprise upgrade status, which is now active in your dashboard. I am also initiating a direct refund of Rs 15,000 back to your original payment method, and I've added a Rs 1,000 compensation credit to your account wallet."
+  },
+  {
+    "role": "customer",
+    "content": "Thank you for the refund and upgrade. But what about my team? We have a client deadline in 2 hours and we really needed the rendering API limits increased."
+  },
+  {
+    "role": "agent",
+    "content": "I completely understand. Since the Enterprise limits are now active on your dashboard, your rendering API limits have already increased to 10,000 videos per hour. You should be able to run all batch requests immediately. I will personally monitor your API traffic for the next hour to ensure no rate-limiting or gateway issues affect your team."
+  },
+  {
+    "role": "customer",
+    "content": "Yes please, that would be helpful. Can you make sure the billing team double checks our invoice too?"
+  },
+  {
+    "role": "agent",
+    "content": "Absolutely. I've sent a ticket to the billing team to review your invoice details. You will receive an updated invoice showing the single payment of Rs 15,000 and the credit of Rs 1,000 in your billing settings within 30 minutes. Please accept our sincere apologies for this experience."
+  },
+  {
+    "role": "customer",
+    "content": "Thank you for handling this well. Appreciate the quick response."
+  },
+  {
+    "role": "agent",
+    "content": "You're welcome! I'm glad we could get this resolved. Your refund of Rs 15,000 will reflect in 2-3 working days and the Enterprise tier is fully active. Good luck with your client deadline, and sorry again for the trouble!"
+  }
+]

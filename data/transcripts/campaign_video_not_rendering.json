@@ -1,0 +1,42 @@
+[
+  {
+    "role": "customer",
+    "content": "Hello? My campaign run #VID12345 shows stuck in processing for the past 3 hours but my email launch is scheduled. Where are my videos? I've been waiting for too long!"
+  },
+  {
+    "role": "agent",
+    "content": "I understand your urgency, sir. Let me check your campaign run details right away. I can see campaign #VID12345 was initiated at 8:15 PM and is stuck. Give me a moment to check the server logs and render queue records."
+  },
+  {
+    "role": "customer",
+    "content": "Yes please. I checked my webhooks and none have fired yet. The rendering engine seems completely frozen for my batch."
+  },
+  {
+    "role": "agent",
+    "content": "You're right, I can see from our system logs that your campaign assets triggered an edge-case memory limit on our standard rendering node. This caused the batch queue to stall. I'm going to initiate a manual override right now to move your campaign to a high-capacity GPU server to finish processing. I'm also refunding the 5,000 video credits spent on this run, and adding 500 bonus rendering credits as compensation."
+  },
+  {
+    "role": "customer",
+    "content": "Okay, I appreciate the credit refund and bonus. But what about my campaign launch schedule? My marketing team is waiting and leads will be lost if this is delayed further."
+  },
+  {
+    "role": "agent",
+    "content": "I completely understand and apologize for the impact on your schedule. I am monitoring the high-capacity server queue for you now. The batch has started processing and should complete in about 15-20 minutes. I will apply a priority tag on your account so that all future render batches bypass standard queues and render instantly. I will personally supervise this run until all webhook notifications are successfully sent to your server."
+  },
+  {
+    "role": "customer",
+    "content": "That's better. At least someone is taking responsibility. Can you also check if our custom domain and SSL are fine? We don't want leads landing on a broken page once videos are ready."
+  },
+  {
+    "role": "agent",
+    "content": "Absolutely. I've verified your custom domain integration and SSL certificate. Both are active and fully operational. Browser landing pages are ready to serve the interactive videos as soon as the rendering completes. I apologize again on behalf of Infosys Springboard. We will make sure your campaign goes live smoothly."
+  },
+  {
+    "role": "customer",
+    "content": "Alright. I'll monitor the dashboard now. Thank you for helping."
+  },
+  {
+    "role": "agent",
+    "content": "You're welcome! Your credits have been refunded and the bonus 500 credits are active. I will keep this ticket open and post an update here once the batch rendering completes. Have a successful campaign launch!"
+  }
+]

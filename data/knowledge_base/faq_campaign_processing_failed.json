@@ -1,0 +1,6 @@
+{
+  "title": "Campaign Processing & Video Rendering Failures",
+  "category": "rendering",
+  "content": "Sometimes video processing gets stuck or fails due to: 1) File format/codec mismatch (e.g., non-H.264 MP4). 2) High resolution assets (4K source on Basic plans). 3) Server queue congestion during peak hours. If a campaign fails to render, all credits are automatically refunded to your account. We also offer a compensation credit of 50 free renders. To avoid rendering issues: Use recommended MP4 format, compress files below 500MB, and verify audio sampling rate (44.1kHz). Repeated failures on the same template are automatically flagged for engineering review.",
+  "keywords": ["rendering", "processing failed", "stuck at 20%", "credits refund", "processing issue"]
+}

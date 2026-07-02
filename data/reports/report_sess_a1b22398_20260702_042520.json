@@ -1,0 +1,36 @@
+{
+  "session_id": "sess_a1b22398",
+  "agent_name": "TestBot",
+  "interaction_mode": "simulator",
+  "total_turns": 2,
+  "sentiment_journey": [
+    {
+      "turn": 1,
+      "sentiment": "frustrated",
+      "frustration": 1.0,
+      "satisfaction_trend": -1.0
+    },
+    {
+      "turn": 2,
+      "sentiment": "negative",
+      "frustration": 0.6,
+      "satisfaction_trend": -0.75
+    }
+  ],
+  "resolution_quality": {
+    "score": 0.0,
+    "issue_resolved": false,
+    "customer_satisfied": false,
+    "escalation_needed": true
+  },
+  "overall_score": 0.29,
+  "coaching_recommendations": [
+    "Consider role-playing high-stress scenarios to build confidence with difficult customers.",
+    "Review knowledge base responses to identify and fill common knowledge gaps."
+  ],
+  "escalation_triggers": [
+    "Turn 1: High frustration level detected (100%); Negative sentiment (frustrated); Declining satisfaction trend"
+  ],
+  "knowledge_gaps": [],
+  "generated_at": "2026-07-02 04:25:20.518448"
+}

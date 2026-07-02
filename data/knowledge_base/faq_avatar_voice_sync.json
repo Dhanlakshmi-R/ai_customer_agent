@@ -1,0 +1,6 @@
+{
+  "title": "AI Speech Synthesis & Lip Sync Alignment",
+  "category": "avatar",
+  "content": "For issues with AI voice-avatar lip sync: 1) Ensure source script has proper punctuation for natural pauses. 2) Source audio should be clear of background noise. 3) Select the correct language and accent profile. If a generated video has noticeable lag (audio-video offset > 100ms), report within 24 hours via Video Manager > Report Sync Issue. We regenerate affected videos free of charge. For severe cases, we escalate to our AI speech team. High-quality speech requires 16-bit mono WAV files for custom voice training.",
+  "keywords": ["lip sync", "voice lag", "AI avatar", "speech synthesis", "regenerate", "audio sync"]
+}

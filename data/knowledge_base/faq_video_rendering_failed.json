@@ -1,0 +1,6 @@
+{
+  "title": "Video Processing Status: Stuck or Failed",
+  "category": "rendering",
+  "content": "If a video is stuck in 'Processing' or 'Rendering' for more than 30 minutes: 1) Check Infosys Status Page for server issues. 2) Verify input assets are accessible (public URLs not expired). 3) Check if template variable lengths match constraints. In case of render failures, credits are auto-refunded. We recommend testing your template with a single test row before launching large batch campaigns. For support, provide the Template ID and Campaign Run ID.",
+  "keywords": ["processing", "stuck", "rendering", "failed", "credits", "template id"]
+}

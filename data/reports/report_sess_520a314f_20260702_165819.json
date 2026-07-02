@@ -1,0 +1,37 @@
+{
+  "session_id": "sess_520a314f",
+  "agent_name": "Agent",
+  "interaction_mode": "simulator",
+  "total_turns": 2,
+  "sentiment_journey": [
+    {
+      "turn": 1,
+      "sentiment": "angry",
+      "frustration": 1.0,
+      "satisfaction_trend": -0.94
+    },
+    {
+      "turn": 2,
+      "sentiment": "angry",
+      "frustration": 1.0,
+      "satisfaction_trend": -0.93
+    }
+  ],
+  "resolution_quality": {
+    "score": 0.0,
+    "issue_resolved": false,
+    "customer_satisfied": false,
+    "escalation_needed": true
+  },
+  "overall_score": 0.23,
+  "coaching_recommendations": [
+    "Consider role-playing high-stress scenarios to build confidence with difficult customers.",
+    "Review knowledge base responses to identify and fill common knowledge gaps."
+  ],
+  "escalation_triggers": [
+    "Turn 1: High frustration level detected (100%); Negative sentiment (angry); Declining satisfaction trend",
+    "Turn 2: High frustration level detected (100%); Negative sentiment (angry); Declining satisfaction trend; Escalation keywords detected: supervisor"
+  ],
+  "knowledge_gaps": [],
+  "generated_at": "2026-07-02 16:58:19.563970"
+}

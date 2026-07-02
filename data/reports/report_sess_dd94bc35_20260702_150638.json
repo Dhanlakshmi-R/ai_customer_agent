@@ -1,0 +1,54 @@
+{
+  "session_id": "sess_dd94bc35",
+  "agent_name": "Agent",
+  "interaction_mode": "simulator",
+  "total_turns": 4,
+  "sentiment_journey": [
+    {
+      "turn": 1,
+      "sentiment": "angry",
+      "frustration": 1.0,
+      "satisfaction_trend": -0.9
+    },
+    {
+      "turn": 2,
+      "sentiment": "angry",
+      "frustration": 1.0,
+      "satisfaction_trend": -0.95
+    },
+    {
+      "turn": 3,
+      "sentiment": "angry",
+      "frustration": 1.0,
+      "satisfaction_trend": -0.84
+    },
+    {
+      "turn": 4,
+      "sentiment": "angry",
+      "frustration": 1.0,
+      "satisfaction_trend": -0.96
+    }
+  ],
+  "resolution_quality": {
+    "score": 0.0,
+    "issue_resolved": false,
+    "customer_satisfied": false,
+    "escalation_needed": true
+  },
+  "overall_score": 0.26,
+  "coaching_recommendations": [
+    "Consider role-playing high-stress scenarios to build confidence with difficult customers.",
+    "Review knowledge base responses to identify and fill common knowledge gaps.",
+    "Work on response clarity \u2014 use shorter sentences and avoid technical jargon.",
+    "Practice de-escalation techniques earlier in the conversation to reduce frustration buildup.",
+    "Increase empathetic acknowledgments (e.g., 'I understand', 'I'm sorry this happened')."
+  ],
+  "escalation_triggers": [
+    "Turn 1: High frustration level detected (100%); Negative sentiment (angry); Declining satisfaction trend",
+    "Turn 2: High frustration level detected (100%); Negative sentiment (angry); Declining satisfaction trend; Escalation keywords detected: supervisor, speak to",
+    "Turn 3: High frustration level detected (100%); Negative sentiment (angry); Declining satisfaction trend; Escalation keywords detected: supervisor, speak to",
+    "Turn 4: High frustration level detected (100%); Negative sentiment (angry); Declining satisfaction trend; Escalation keywords detected: supervisor, speak to"
+  ],
+  "knowledge_gaps": [],
+  "generated_at": "2026-07-02 15:06:38.626569"
+}

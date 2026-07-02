@@ -1,0 +1,6 @@
+{
+  "title": "GST Invoice & Tax Compliance",
+  "category": "billing",
+  "content": "All invoices include GST as per Indian tax law. CGST + SGST for intra-state, IGST for inter-state transactions. GSTIN is displayed on every invoice. To download GST invoice: Billing > Invoices > Download. Invoice format complies with GST Council rules. For GST input credit, download invoice from Billing > Tax Documents. State-wise GST rates apply (0%, 5%, 12%, 18%, 28%). Our service falls under SAC 998314 (IT software services) at 18% GST. For B2B transactions, provide your GSTIN at checkout for proper invoicing. Reverse charge mechanism applies for certain services as per Section 9(3) of CGST Act.",
+  "keywords": ["GST", "invoice", "tax", "CGST", "SGST", "IGST", "GSTIN", "compliance", "input credit"]
+}

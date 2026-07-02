@@ -1,0 +1,50 @@
+[
+  {
+    "role": "customer",
+    "content": "Your mobile app is completely broken. I've reinstalled it three times, cleared cache, restarted my phone. It just crashes on startup every single time. I need this for field work and I can't use it."
+  },
+  {
+    "role": "agent",
+    "content": "I'm sorry to hear you're experiencing this issue. Crash on startup can be frustrating, especially when you need it for work. Let me help you troubleshoot this. What device and iOS version are you using?"
+  },
+  {
+    "role": "customer",
+    "content": "iPhone 15 Pro, iOS 17.4. I already told you I tried everything. Can you just escalate this to your engineering team?"
+  },
+  {
+    "role": "agent",
+    "content": "I understand you've already tried the basic troubleshooting steps, and I appreciate your patience. Before I escalate, I want to make sure we've covered all the common causes so engineering can investigate efficiently. Let me check a few things on our end. Can you tell me approximately how much free storage you have on your device?"
+  },
+  {
+    "role": "customer",
+    "content": "About 12GB free. Look, I've been using this app for 2 years without issues. Something clearly broke in the latest update."
+  },
+  {
+    "role": "agent",
+    "content": "You're right, and I can see there was an update pushed 3 days ago that affected a small number of iOS 17.4 users. We've identified the issue - it's related to a camera permission change in the latest iOS. Engineering has a fix ready. I'm going to do two things: First, I'll push the hotfix to your account right now. Second, I'll send you a direct download link for the fixed version. You should receive an email within 5 minutes."
+  },
+  {
+    "role": "customer",
+    "content": "Okay, that sounds more like it. So I just need to install the new version?"
+  },
+  {
+    "role": "agent",
+    "content": "Exactly. Once you receive the email, click the link to install the updated version. It should take about 2 minutes. Your data is all safe on our servers, so nothing will be lost. I'll also stay on this chat while you try it to make sure everything works."
+  },
+  {
+    "role": "customer",
+    "content": "Got the email. Installing now... Okay, it's working! The app opened without crashing. Thank you for actually knowing what the issue was."
+  },
+  {
+    "role": "agent",
+    "content": "Excellent! I'm glad it's working now. I've also applied a credit to your account for the inconvenience - you'll see a $5 credit on your next bill. Is there anything else I can help you with?"
+  },
+  {
+    "role": "customer",
+    "content": "No, that's all. Much better support experience than I expected. Thanks."
+  },
+  {
+    "role": "agent",
+    "content": "Thank you! I'm glad we could resolve this quickly. If you experience any other issues, don't hesitate to reach out. Have a great day in the field!"
+  }
+]

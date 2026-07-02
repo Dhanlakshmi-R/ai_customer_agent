@@ -1,0 +1,90 @@
+[
+  {
+    "id": "order_not_received",
+    "title": "Zomato: Missing Items in Food Delivery",
+    "customer_persona": "Hangry customer who waited 45 minutes for their dinner, only to find the main course missing.",
+    "problem_description": "missing food",
+    "product_context": "Zomato - Food Delivery App",
+    "emotional_start": "angry",
+    "context": "Customer ordered a family meal from a premium restaurant via Zomato for Rs 1200. The delivery arrived after 45 minutes, but the main course items (worth Rs 700) are missing from the sealed bag. Customer wants an immediate redelivery or full refund, not just a partial refund coupon.",
+    "key_issues": ["missing items", "sealed bag tampered", "refuses partial coupon", "wants full refund"],
+    "resolution_path": "Apologize + issue instant refund to source for missing items + add Rs 100 goodwill credit"
+  },
+  {
+    "id": "wrong_order",
+    "title": "AWS: Billing Double Charge on EC2 Upgrades",
+    "customer_persona": "Professional DevOps engineer. Upgraded their EC2 instances but was charged twice on their corporate credit card.",
+    "problem_description": "billing",
+    "product_context": "Amazon Web Services (AWS) - Cloud Infrastructure",
+    "emotional_start": "frustrated",
+    "context": "Customer upgraded their AWS account's EC2 instances. Their corporate credit card was charged twice (totaling $3,000 instead of $1,500). Their billing dashboard still shows pending. They have screenshots of the bank SMS. Needs excess charge refunded immediately to avoid accounting issues.",
+    "key_issues": ["double charged", "corporate card", "dashboard out of sync", "needs quick refund"],
+    "resolution_path": "Apologize + manually sync billing dashboard + initiate $1,500 refund trace + escalate to billing team"
+  },
+  {
+    "id": "payment_failed_deducted",
+    "title": "Stripe: API Payment Failed But Money Deducted",
+    "customer_persona": "Anxious e-commerce store owner using Stripe. A customer tried to pay, the API returned an error, but the customer's bank account was deducted.",
+    "problem_description": "payment",
+    "product_context": "Stripe - Payment Gateway",
+    "emotional_start": "frustrated",
+    "context": "Store owner reports that their Stripe API integration showed a 'Payment Failed' (HTTP 402) error for a $500 transaction. However, the end-user's bank account was debited. Total $500 deducted but no successful charge on Stripe dashboard. The end-user is threatening the store owner with legal action.",
+    "key_issues": ["payment failed API", "money deducted", "no charge on dashboard", "angry end-user"],
+    "resolution_path": "Verify failed intent in logs + confirm it's an authorization hold (will reverse in 3-5 days) + provide official ARN for end-user"
+  },
+  {
+    "id": "late_delivery_angry",
+    "title": "Vercel: Production Deployment Failing (404)",
+    "customer_persona": "Stressed frontend developer who pushed a critical hotfix to Vercel, but the production build is resulting in a 404 for all users.",
+    "problem_description": "deployment",
+    "product_context": "Vercel - Frontend Cloud Platform",
+    "emotional_start": "angry",
+    "context": "Customer deployed a Next.js app to Vercel. The build logs show success, but the production URL returns a 404 error. The site is currently down for 10,000 active users. They are on the Pro plan and demand immediate assistance to rollback or fix the edge caching issue.",
+    "key_issues": ["404 in production", "build succeeded but site down", "edge caching issue", "demands immediate fix"],
+    "resolution_path": "Investigate edge network cache + trigger manual rollback + clear CDN cache + explain Next.js routing conflict"
+  },
+  {
+    "id": "food_quality_rotten",
+    "title": "Swiggy Instamart: Rotten Groceries Delivered",
+    "customer_persona": "Annoyed customer who ordered fresh groceries via Swiggy Instamart. The fruits delivered are completely rotten and unusable.",
+    "problem_description": "quality",
+    "product_context": "Swiggy Instamart - Quick Commerce",
+    "emotional_start": "angry",
+    "context": "Customer ordered apples and avocados via Swiggy Instamart for a party. The items delivered are completely rotten, squished, and smell bad. Customer has photos. They are angry about the lack of quality check before packing and want replacement immediately.",
+    "key_issues": ["rotten produce", "poor quality check", "has photo evidence", "wants immediate replacement"],
+    "resolution_path": "Acknowledge poor quality + issue full refund + process free replacement order + log complaint against dark store"
+  },
+  {
+    "id": "ran_out_of_stock",
+    "title": "Cloudflare: Custom Domain SSL Provisioning Stuck",
+    "customer_persona": "Frustrated tech-savvy user. Trying to host a secure site on Cloudflare but getting security warnings for 24 hours.",
+    "problem_description": "domain",
+    "product_context": "Cloudflare - Web Performance & Security",
+    "emotional_start": "angry",
+    "context": "Customer added their custom domain to Cloudflare. The dashboard has been showing 'Provisioning SSL' for 24 hours. Now when users visit, browsers show a 'Your connection is not private' (ERR_CERT_COMMON_NAME_INVALID) warning. This is their third attempt. Extremely frustrated by the delay.",
+    "key_issues": ["SSL provisioning stuck", "security warning", "custom domain setup fail", "delayed launch"],
+    "resolution_path": "Acknowledge SSL delay + manually re-trigger Let's Encrypt validation + instruct to purge local DNS cache"
+  },
+  {
+    "id": "delivery_partner_rude",
+    "title": "Uber: Driver Refused Duty and Was Abusive",
+    "customer_persona": "Furious and shaken passenger whose Uber driver refused to go to the drop location and verbally abused them.",
+    "problem_description": "driver",
+    "product_context": "Uber - Ride Hailing",
+    "emotional_start": "frustrated",
+    "context": "Customer booked an Uber at night. The driver arrived, asked for the drop location, and then demanded extra cash. When the customer refused, the driver cancelled the trip, shouted abusive words, and drove away aggressively. Customer felt unsafe and was charged a cancellation fee.",
+    "key_issues": ["driver demanded cash", "verbal abuse", "safety concern", "wrongful cancellation fee"],
+    "resolution_path": "Refund cancellation fee + escalate to trust & safety team + suspend driver pending investigation + apologize sincerely"
+  },
+  {
+    "id": "promo_code_not_working",
+    "title": "Shopify: Black Friday Discount Code Failing",
+    "customer_persona": "Panicked Shopify store owner. Their Black Friday discount code is failing for all customers at checkout.",
+    "problem_description": "discount",
+    "product_context": "Shopify - E-commerce Platform",
+    "emotional_start": "frustrated",
+    "context": "Store owner set up a 'BFCM50' discount code for 50% off during Black Friday. Customers are complaining that entering the code at checkout shows 'Discount not applicable'. The store owner is losing hundreds of sales by the minute. Needs urgent fix.",
+    "key_issues": ["promo code failing", "Black Friday sale", "losing sales rapidly", "needs urgent fix"],
+    "resolution_path": "Check discount conditions (e.g. minimum cart value, collection specific) + guide merchant to fix the setting + provide link to Shopify status page"
+  }
+]

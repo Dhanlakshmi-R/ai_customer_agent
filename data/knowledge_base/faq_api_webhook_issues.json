@@ -1,0 +1,6 @@
+{
+  "title": "API Webhook and Integration Issues",
+  "category": "integration",
+  "content": "Webhook delivery fails or shows delay due to: 1) Client server timeouts (our system expects HTTP 200 within 5 seconds). 2) Incorrect endpoint URL. 3) SSL validation failures on target server. If a webhook fails, our system retries with exponential backoff (5 attempts over 1 hour). We recommend checking raw logs under Integrations > Webhook Logs. If a payload is missed, you can manually trigger redelivery from the log dashboard. For custom integrations, ensure payload signature validation is configured correctly.",
+  "keywords": ["API", "webhook", "integration", "timeout", "webhook log", "payload", "fail"]
+}

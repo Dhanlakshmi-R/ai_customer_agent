@@ -1,0 +1,479 @@
+{
+  "TestBot": [
+    {
+      "quality_score": 0.54,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.54,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.54,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": "frustrated"
+    },
+    {
+      "quality_score": 0.61,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.61,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.61,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": "negative"
+    },
+    {
+      "quality_score": 0.61,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.61,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.61,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": "frustrated"
+    },
+    {
+      "quality_score": 0.74,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.74,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.74,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": "positive"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    }
+  ],
+  "Agent": [
+    {
+      "quality_score": 0.35,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 2,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.35,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 2,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.35,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 2,
+      "next_sentiment": "frustrated"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": "frustrated"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": "frustrated"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": "negative"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": "negative"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": "frustrated"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": "angry"
+    },
+    {
+      "quality_score": 0.31,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.31,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.31,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": "frustrated"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": "angry"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": "angry"
+    },
+    {
+      "quality_score": 0.48,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.48,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.48,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": "angry"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": "angry"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": "angry"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": "angry"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": "angry"
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.17,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 3,
+      "next_sentiment": "angry"
+    }
+  ],
+  "TestBot2": [
+    {
+      "quality_score": 0.74,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.74,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.74,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    }
+  ],
+  "TestBot3": [
+    {
+      "quality_score": 0.24,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 4,
+      "next_sentiment": null
+    }
+  ]
+}

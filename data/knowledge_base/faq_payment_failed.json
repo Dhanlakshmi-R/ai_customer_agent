@@ -1,0 +1,6 @@
+{
+  "title": "Payment Failed But Amount Deducted",
+  "category": "payment",
+  "content": "Payment failed but money deducted? This is a temporary hold by your bank. The amount is auto-released within 3-5 working days. Steps: 1) Check account status in Subscription/Billing - if credit is not updated, payment will auto-refund. 2) For UPI: Check UPI app transaction history. Failed payments show as 'Refund Initiated' within 24 hrs. 3) For Debit/Credit Card: The hold is released in 3-5 days. Contact your bank if it takes longer. 4) For NetBanking: Refund processes in 2-3 working days. If not received: Report via Support > Billing Issue > Amount Deducted. We'll initiate a refund trace with our payment gateway (Razorpay/BillDesk). Refund reference ID: RZP-XXXXX or BILL-XXXXX. Do not retry the transaction until the refund is confirmed.",
+  "keywords": ["payment failed", "amount deducted", "transaction failed", "money deducted", "UPI failed", "hold", "refund"]
+}
