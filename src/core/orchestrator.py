@@ -38,6 +38,7 @@ class Orchestrator:
         product_context: str = "",
         scenario: Scenario | None = None,
         transcript_path: str | None = None,
+        risk_threshold: float = 0.7,
     ) -> SessionState:
         """
         Kicks off a new coaching session.
@@ -48,6 +49,7 @@ class Orchestrator:
         self.active_session = self.session_config_module.create_session(
             mode=mode, agent_name=agent_name, product_context=product_context,
             scenario=scenario, transcript_path=transcript_path,
+            risk_threshold=risk_threshold,
         )
 
         # Kickstart the simulator if that mode is selected

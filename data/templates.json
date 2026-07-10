@@ -1,0 +1,26 @@
+{
+  "manual": {
+    "mode": "simulator",
+    "agent_name": "Agent",
+    "product_context": "SaaS Platform",
+    "risk_threshold": 70
+  },
+  "agent": {
+    "mode": "simulator",
+    "agent_name": "Agent",
+    "product_context": "SaaS Platform",
+    "risk_threshold": 70
+  },
+  "manual ": {
+    "mode": "simulator",
+    "agent_name": "Agent",
+    "product_context": "SaaS Platform",
+    "risk_threshold": 70
+  },
+  "tempalate-manual": {
+    "mode": "simulator",
+    "agent_name": "Agent",
+    "product_context": "SaaS Platform",
+    "risk_threshold": 70
+  }
+}

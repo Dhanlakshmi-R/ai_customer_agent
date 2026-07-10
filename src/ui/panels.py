@@ -21,7 +21,7 @@ def render_conversation_panel(session: SessionState):
     with container:
         if not session.messages:
             st.markdown(
-                '<div style="text-align:center;padding:40px 0;color:#64748b">'
+                '<div style="text-align:center;padding:40px 0;color:var(--text-muted)">'
                 '<div style="font-size:3em;margin-bottom:8px;filter:drop-shadow(0 0 10px rgba(99,102,241,0.3))">💬</div>'
                 '<div style="font-weight:600">No messages yet</div>'
                 '<div style="font-size:0.8em;margin-top:4px">Start a session to begin</div></div>',
@@ -54,7 +54,7 @@ def render_coaching_panel(turn_analysis: TurnAnalysis | None, session: SessionSt
     with container:
         if not turn_analysis:
             st.markdown(
-                '<div style="text-align:center;padding:40px 0;color:#64748b">'
+                '<div style="text-align:center;padding:40px 0;color:var(--text-muted)">'
                 '<div style="font-size:3em;margin-bottom:8px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(99,102,241,0.3))">🎯</div>'
                 '<div style="font-weight:600">Waiting for input...</div>'
                 '<div style="font-size:0.8em;margin-top:4px">Send a message to get coaching</div></div>',
@@ -124,9 +124,9 @@ def render_coaching_panel(turn_analysis: TurnAnalysis | None, session: SessionSt
                     '<div style="background:linear-gradient(135deg,rgba(220,38,38,0.2),rgba(153,27,27,0.4));'
                     'border:1px solid rgba(220,38,38,0.5);border-radius:12px;padding:12px;margin-bottom:12px;'
                     'box-shadow: 0 4px 15px rgba(220,38,38,0.3); animation: pulse 2s infinite">'
-                    '<div style="color:#fca5a5;font-weight:800;font-size:0.85em;text-transform:uppercase;margin-bottom:4px">'
+                    '<div style="color:var(--text-danger);font-weight:800;font-size:0.85em;text-transform:uppercase;margin-bottom:4px">'
                     '🚨 SYSTEM MANAGER ALERT</div>'
-                    '<div style="color:#fee2e2;font-size:0.95em">'
+                    '<div style="color:var(--text-on-card);font-size:0.95em">'
                     'Customer frustration is critically high! De-escalate immediately or offer compensation to prevent churn.'
                     '</div></div>',
                     unsafe_allow_html=True,
@@ -143,18 +143,18 @@ def render_coaching_panel(turn_analysis: TurnAnalysis | None, session: SessionSt
 
             st.markdown(
                 f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">'
-                f'<div style="background:linear-gradient(145deg,rgba(99,102,241,0.12),rgba(30,41,59,0.7));'
+                f'<div style="background:linear-gradient(145deg,rgba(99,102,241,0.12),var(--surface-overlay));'
                 f'border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:10px;text-align:center">'
-                f'<div style="font-size:0.7em;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.05em">Intent</div>'
-                f'<div style="font-weight:700;color:#f1f5f9;margin-top:4px">{intent_label}</div></div>'
-                f'<div style="background:linear-gradient(145deg,rgba({",".join(str(int(sc.lstrip("#")[i:i+2], 16)) for i in (0, 2, 4))},0.12),rgba(30,41,59,0.7));'
+                f'<div style="font-size:0.7em;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em">Intent</div>'
+                f'<div style="font-weight:700;color:var(--text);margin-top:4px">{intent_label}</div></div>'
+                f'<div style="background:linear-gradient(145deg,rgba({",".join(str(int(sc.lstrip("#")[i:i+2], 16)) for i in (0, 2, 4))},0.12),var(--surface-overlay));'
                 f'border:1px solid {sc}22;border-radius:12px;padding:10px;text-align:center">'
-                f'<div style="font-size:0.7em;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.05em">Sentiment</div>'
+                f'<div style="font-size:0.7em;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em">Sentiment</div>'
                 f'<div style="font-weight:700;color:{sc};margin-top:4px">{sent_label}</div></div>'
-                f'<div style="background:linear-gradient(145deg,rgba(245,158,11,0.12),rgba(30,41,59,0.7));'
+                f'<div style="background:linear-gradient(145deg,rgba(245,158,11,0.12),var(--surface-overlay));'
                 f'border:1px solid rgba(245,158,11,0.15);border-radius:12px;padding:10px;text-align:center">'
-                f'<div style="font-size:0.7em;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.05em">Frustration</div>'
-                f'<div style="font-weight:700;color:#f59e0b;margin-top:4px">{int(ia.frustration_level * 100)}%</div></div></div>',
+                f'<div style="font-size:0.7em;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em">Frustration</div>'
+                f'<div style="font-weight:700;color:var(--text-warning);margin-top:4px">{int(ia.frustration_level * 100)}%</div></div></div>',
                 unsafe_allow_html=True,
             )
 
@@ -169,9 +169,9 @@ def render_coaching_panel(turn_analysis: TurnAnalysis | None, session: SessionSt
             rl, rc, rclass = risk_map.get(ea.risk_level, ("Unknown", "#64748b", ""))
             st.markdown(
                 f'<div style="display:flex;align-items:center;gap:10px;margin:8px 0">'
-                f'<span style="color:#94a3b8;font-size:0.85em;font-weight:600">Escalation Risk:</span>'
+                f'<span style="color:var(--text-muted);font-size:0.85em;font-weight:600">Escalation Risk:</span>'
                 f'<span class="{rclass}" style="padding:3px 12px;border-radius:8px;font-size:0.8em;font-weight:700">{rl}</span>'
-                f'<span style="color:#94a3b8;font-size:0.8em">({ea.risk_score:.0%})</span></div>',
+                f'<span style="color:var(--text-muted);font-size:0.8em">({ea.risk_score:.0%})</span></div>',
                 unsafe_allow_html=True,
             )
 
@@ -189,16 +189,16 @@ def render_coaching_panel(turn_analysis: TurnAnalysis | None, session: SessionSt
 
                 st.markdown(
                     f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
-                    f'<span style="background:{badge_bg};color:white;padding:4px 14px;'
+                    f'<span style="background:{badge_bg};color:var(--text-on-accent);padding:4px 14px;'
                     f'border-radius:10px;font-size:0.8em;font-weight:700">{badge_text}</span>'
-                    f'<span style="color:#64748b;font-size:0.75em">confidence: {confidence:.0%}</span></div>',
+                    f'<span style="color:var(--text-muted);font-size:0.75em">confidence: {confidence:.0%}</span></div>',
                     unsafe_allow_html=True,
                 )
 
                 st.markdown(
                     f'<div style="display:flex;gap:16px;margin-bottom:8px">'
-                    f'<div style="color:#94a3b8;font-size:0.85em"><span style="font-weight:600;color:#f1f5f9">Clarity:</span> {cf.clarity_score:.0%}</div>'
-                    f'<div style="color:#94a3b8;font-size:0.85em"><span style="font-weight:600;color:#f1f5f9">Tone:</span> {cf.tone_quality}</div></div>',
+                    f'<div style="color:var(--text-muted);font-size:0.85em"><span style="font-weight:600;color:var(--text)">Clarity:</span> {cf.clarity_score:.0%}</div>'
+                    f'<div style="color:var(--text-muted);font-size:0.85em"><span style="font-weight:600;color:var(--text)">Tone:</span> {cf.tone_quality}</div></div>',
                     unsafe_allow_html=True,
                 )
 
@@ -206,9 +206,9 @@ def render_coaching_panel(turn_analysis: TurnAnalysis | None, session: SessionSt
                 if cf.suggested_response:
                     with st.expander("Suggested Response", expanded=False):
                         st.markdown(
-                            f'<div style="background:linear-gradient(145deg,rgba(99,102,241,0.08),rgba(30,41,59,0.7));'
+                            f'<div style="background:linear-gradient(145deg,rgba(99,102,241,0.08),var(--surface-overlay));'
                             f'padding:12px 16px;border-radius:12px;border-left:4px solid #6366f1;'
-                            f'font-size:0.9em;color:#e2e8f0;line-height:1.6">'
+                            f'font-size:0.9em;color:var(--text);line-height:1.6">'
                             f'{cf.suggested_response}</div>',
                             unsafe_allow_html=True,
                         )
@@ -220,18 +220,18 @@ def render_coaching_panel(turn_analysis: TurnAnalysis | None, session: SessionSt
             else:
                 st.markdown(
                     '<div style="display:flex;align-items:center;gap:10px">'
-                    '<span style="background:linear-gradient(135deg,#059669,#10b981);color:white;'
+                    '<span style="background:linear-gradient(135deg,#059669,#10b981);color:var(--text-on-accent);'
                     'padding:4px 14px;border-radius:10px;font-size:0.8em;font-weight:700">Well Handled</span>'
-                    f'<span style="color:#64748b;font-size:0.75em">confidence: {confidence:.0%}</span></div>'
-                    '<div style="color:#94a3b8;font-size:0.85em;margin-top:8px;font-style:italic">No intervention needed.</div>',
+                    f'<span style="color:var(--text-muted);font-size:0.75em">confidence: {confidence:.0%}</span></div>'
+                    '<div style="color:var(--text-muted);font-size:0.85em;margin-top:8px;font-style:italic">No intervention needed.</div>',
                     unsafe_allow_html=True,
                 )
 
             stats = calibrator.get_agent_stats(session.config.agent_name)
             if stats["sessions"] > 0:
                 st.markdown(
-                    f'<div style="margin-top:8px;padding:6px 10px;background:rgba(30,41,59,0.5);'
-                    f'border-radius:8px;font-size:0.7em;color:#64748b">'
+                    f'<div style="margin-top:8px;padding:6px 10px;background:var(--surface-overlay);'
+                    f'border-radius:8px;font-size:0.7em;color:var(--text-muted)">'
                     f'Coach: {stats["sessions"]} turns | shown: {stats.get("coaching_shown", 0)} | hidden: {stats.get("coaching_hidden", 0)}</div>',
                     unsafe_allow_html=True,
                 )
@@ -242,7 +242,7 @@ def render_knowledge_panel(turn_analysis: TurnAnalysis | None, session: SessionS
     with container:
         if not turn_analysis or not turn_analysis.knowledge_items:
             st.markdown(
-                '<div style="text-align:center;padding:40px 0;color:#64748b">'
+                '<div style="text-align:center;padding:40px 0;color:var(--text-muted)">'
                 '<div style="font-size:3em;margin-bottom:8px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(6,182,212,0.3))">📚</div>'
                 '<div style="font-weight:600">Relevant articles</div>'
                 '<div style="font-size:0.8em;margin-top:4px">Will appear here as you chat</div></div>',
@@ -254,11 +254,11 @@ def render_knowledge_panel(turn_analysis: TurnAnalysis | None, session: SessionS
             pct = int(item.relevance_score * 100)
             st.markdown(
                 f'<div class="kb-card">'
-                f'<div style="font-weight:700;color:#f1f5f9;margin-bottom:6px">{item.title}</div>'
+                f'<div style="font-weight:700;color:var(--text);margin-bottom:6px">{item.title}</div>'
                 f'<div class="progress-bar"><div class="progress-fill" style="width:{pct}%"></div></div>'
                 f'<div style="display:flex;justify-content:space-between;margin:4px 0">'
-                f'<span style="font-size:0.75em;color:#6366f1;font-weight:600">{pct}% match</span></div>'
-                f'<div style="font-size:0.85em;color:#94a3b8;line-height:1.5">{item.content[:180]}{"..." if len(item.content) > 180 else ""}</div>'
+                f'<span style="font-size:0.75em;color:var(--text-accent);font-weight:600">{pct}% match</span></div>'
+                f'<div style="font-size:0.85em;color:var(--text-muted);line-height:1.5">{item.content[:180]}{"..." if len(item.content) > 180 else ""}</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
@@ -285,7 +285,7 @@ def render_performance_report(report):
     st.markdown(
         f'<div class="score-ring" style="color:{gc}">{overall:.0%}</div>'
         f'<div style="text-align:center;margin-bottom:20px">'
-        f'<span style="background:{gc};color:white;padding:4px 16px;border-radius:10px;'
+        f'<span style="background:{gc};color:var(--text-on-accent);padding:4px 16px;border-radius:10px;'
         f'font-weight:700;font-size:0.9em">{grade}</span></div>',
         unsafe_allow_html=True,
     )

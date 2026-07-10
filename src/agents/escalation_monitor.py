@@ -54,10 +54,14 @@ class EscalationMonitorAgent:
 
         risk_score = min(risk_score, 1.0)
 
-        if risk_score >= 0.8:
+        thresholds = getattr(session.config, "risk_threshold", 0.7)
+        high_threshold = thresholds
+        critical_threshold = min(thresholds + 0.15, 1.0)
+
+        if risk_score >= critical_threshold:
             risk_level = EscalationRisk.CRITICAL
             strategies.append("IMMEDIATE: Notify supervisor and transfer to senior support")
-        elif risk_score >= 0.6:
+        elif risk_score >= high_threshold:
             risk_level = EscalationRisk.HIGH
             strategies.append("Alert team lead for monitoring")
             strategies.append("Prepare escalation handoff summary")

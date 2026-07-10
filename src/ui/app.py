@@ -1,5 +1,7 @@
 import os
 import sys
+import json
+from pathlib import Path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import streamlit as st
@@ -16,6 +18,143 @@ from src.ui.panels import (
 from src.rag.knowledge_base import knowledge_base
 from src.rag.ingest import ingest_with_feedback
 from src.core.database import database
+
+TEMPLATES_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "templates.json")
+
+
+def load_templates() -> dict:
+    if not os.path.exists(TEMPLATES_PATH):
+        return {}
+    try:
+        with open(TEMPLATES_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def save_templates(templates: dict):
+    os.makedirs(os.path.dirname(TEMPLATES_PATH), exist_ok=True)
+    with open(TEMPLATES_PATH, "w", encoding="utf-8") as f:
+        json.dump(templates, f, indent=2)
+
+
+def apply_theme(theme: str):
+    if theme == "light":
+        styles = {
+            "--bg": "#f8fafc",
+            "--bg2": "#ffffff",
+            "--card": "rgba(255, 255, 255, 0.9)",
+            "--card-solid": "#ffffff",
+            "--surface": "#ffffff",
+            "--surface-strong": "#f1f5f9",
+            "--surface-overlay": "rgba(15, 23, 42, 0.12)",
+            "--surface-border": "rgba(148, 163, 184, 0.2)",
+            "--border": "rgba(148, 163, 184, 0.2)",
+            "--border-glow": "rgba(99, 102, 241, 0.2)",
+            "--text": "#0f172a",
+            "--text-primary": "#0f172a",
+            "--text-secondary": "#475569",
+            "--text2": "#475569",
+            "--text-muted": "#64748b",
+            "--text-subtle": "#94a3b8",
+            "--text-disabled": "#94a3b8",
+            "--text-on-card": "#0f172a",
+            "--text-on-accent": "#ffffff",
+            "--text-accent": "#6366f1",
+            "--text-success": "#10b981",
+            "--text-warning": "#f59e0b",
+            "--text-danger": "#ef4444",
+            "--text-info": "#2dd4bf",
+            "--accent": "#6366f1",
+            "--accent2": "#a78bfa",
+            "--accent3": "#2dd4bf",
+            "--green": "#10b981",
+            "--red": "#ef4444",
+            "--orange": "#f59e0b",
+            "--glass": "rgba(255, 255, 255, 0.8)",
+            "--glass-border": "rgba(148, 163, 184, 0.2)",
+            "--placeholder": "#94a3b8",
+        }
+        background = "linear-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 25%), radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%)"
+        app_bg = "#f8fafc"
+    else:
+        styles = {
+            "--bg": "#0b1120",
+            "--bg2": "#0f172a",
+            "--card": "rgba(15, 23, 42, 0.6)",
+            "--card-solid": "#0f172a",
+            "--surface": "rgba(15, 23, 42, 0.6)",
+            "--surface-strong": "#111827",
+            "--surface-overlay": "rgba(15, 23, 42, 0.55)",
+            "--surface-border": "rgba(148, 163, 184, 0.1)",
+            "--border": "rgba(148, 163, 184, 0.1)",
+            "--border-glow": "rgba(139, 92, 246, 0.4)",
+            "--text": "#f8fafc",
+            "--text-primary": "#f8fafc",
+            "--text-secondary": "#94a3b8",
+            "--text2": "#94a3b8",
+            "--text-muted": "#cbd5e1",
+            "--text-subtle": "#64748b",
+            "--text-disabled": "#64748b",
+            "--text-on-card": "#f8fafc",
+            "--text-on-accent": "#ffffff",
+            "--text-accent": "#818cf8",
+            "--text-success": "#10b981",
+            "--text-warning": "#f59e0b",
+            "--text-danger": "#f43f5e",
+            "--text-info": "#2dd4bf",
+            "--accent": "#818cf8",
+            "--accent2": "#c084fc",
+            "--accent3": "#2dd4bf",
+            "--green": "#10b981",
+            "--red": "#f43f5e",
+            "--orange": "#f59e0b",
+            "--glass": "rgba(15, 23, 42, 0.7)",
+            "--glass-border": "rgba(255, 255, 255, 0.1)",
+            "--placeholder": "#94a3b8",
+        }
+        background = "radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.12), transparent 25%), radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.12), transparent 25%)"
+        app_bg = "#0b1120"
+
+    css_vars = ";".join(f"{k}: {v}" for k, v in styles.items())
+    st.markdown(
+        f"<style>:root {{{css_vars}}} .stApp {{ background: {app_bg} !important; }} .stApp::before {{ background: {background} !important; }}</style>",
+        unsafe_allow_html=True,
+    )
+
+
+def generate_markdown_report(report, session=None) -> str:
+    lines = [
+        f"# Session Report: {report.session_id}",
+        f"**Agent:** {report.agent_name}",
+        f"**Mode:** {report.interaction_mode.value.title()}",
+        f"**Total Turns:** {report.total_turns}",
+        f"**Overall Score:** {report.overall_score:.2f}",
+        "",
+        "## Resolution Quality",
+        f"- Issue resolved: {'Yes' if report.resolution_quality and report.resolution_quality.issue_resolved else 'No'}",
+        f"- Customer satisfied: {'Yes' if report.resolution_quality and report.resolution_quality.customer_satisfied else 'No'}",
+        f"- Escalation needed: {'Yes' if report.resolution_quality and report.resolution_quality.escalation_needed else 'No'}",
+        f"- Resolution score: {report.resolution_quality.score:.2f}" if report.resolution_quality else "- Resolution score: N/A",
+        "",
+        "## Coaching Recommendations",
+    ]
+    for rec in report.coaching_recommendations:
+        lines.append(f"- {rec}")
+    lines.extend(["", "## Escalation Triggers"])
+    for trigger in report.escalation_triggers:
+        lines.append(f"- {trigger}")
+    lines.extend(["", "## Knowledge Gaps"])
+    for gap in report.knowledge_gaps:
+        lines.append(f"- {gap}")
+
+    if session and session.messages:
+        lines.extend(["", "## Transcript"])
+        for msg in session.messages:
+            role = "Customer" if msg.role == "customer" else "Agent" if msg.role == "agent" else msg.role.title()
+            lines.append(f"- **{role}:** {msg.content}")
+
+    return "\n".join(lines)
 
 
 st.set_page_config(
@@ -47,7 +186,19 @@ st.markdown("""
     --border: rgba(148, 163, 184, 0.1);
     --border-glow: rgba(139, 92, 246, 0.4);
     --text: #f8fafc;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
     --text2: #94a3b8;
+    --text-muted: #cbd5e1;
+    --text-subtle: #64748b;
+    --text-disabled: #64748b;
+    --text-on-card: #f8fafc;
+    --text-on-accent: #ffffff;
+    --text-accent: #818cf8;
+    --text-success: #10b981;
+    --text-warning: #f59e0b;
+    --text-danger: #f43f5e;
+    --text-info: #2dd4bf;
     --accent: #818cf8;
     --accent2: #c084fc;
     --accent3: #2dd4bf;
@@ -58,10 +209,44 @@ st.markdown("""
     --glass-border: rgba(255, 255, 255, 0.1);
 }
 
+/* THEME-AWARE TEXT CLASSES */
+.theme-text-primary { color: var(--text-primary) !important; }
+.theme-text-secondary { color: var(--text-secondary) !important; }
+.theme-text-muted { color: var(--text-muted) !important; }
+.theme-text-subtle { color: var(--text-subtle) !important; }
+.theme-text-accent { color: var(--text-accent) !important; }
+.theme-text-success { color: var(--text-success) !important; }
+.theme-text-warning { color: var(--text-warning) !important; }
+.theme-text-danger { color: var(--text-danger) !important; }
+.theme-text-info { color: var(--text-info) !important; }
+.theme-text-on-accent { color: var(--text-on-accent) !important; }
+
+a, a:hover, a:visited { color: var(--text-accent) !important; }
+[data-testid="stCaption"], .stCaption { color: var(--text-muted) !important; }
+
 /* ANIMATED BACKGROUND */
 .stApp {
     background: #0b1120 !important;
     font-family: 'Inter', sans-serif !important;
+}
+.stApp, .stApp *, .stApp .stMarkdownContainer, .stApp [data-testid="stMarkdownContainer"] {
+    color: var(--text) !important;
+}
+.stApp p, .stApp div, .stApp span, .stApp label, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6 {
+    color: inherit;
+}
+.stApp input, .stApp textarea, .stApp select, .stApp option, .stApp button {
+    color: var(--text) !important;
+}
+.stApp input::placeholder, .stApp textarea::placeholder, .stApp select::placeholder {
+    color: var(--placeholder) !important;
+    opacity: 1 !important;
+}
+.stButton > button[data-testid="stBaseButton-primary"] {
+    color: var(--text-on-accent) !important;
+}
+.stSidebar .stMarkdownContainer, .stSidebar [data-testid="stMarkdownContainer"] {
+    color: var(--text) !important;
 }
 .stApp::before {
     content: '';
@@ -164,7 +349,7 @@ section[data-testid="stSidebar"] {
 .stButton > button:hover::before { left: 100%; }
 .stButton > button[data-testid="stBaseButton-primary"] {
     background: linear-gradient(135deg, var(--accent), var(--accent2)) !important;
-    color: white !important;
+    color: var(--text-on-accent) !important;
     box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3),
                 0 0 0 1px rgba(139, 92, 246, 0.2) !important;
 }
@@ -184,7 +369,7 @@ section[data-testid="stSidebar"] {
 }
 .stButton > button:not([data-testid="stBaseButton-primary"]):hover {
     border-color: var(--border-glow) !important;
-    background: rgba(30, 41, 59, 0.8) !important;
+    background: var(--glass) !important;
     transform: translateY(-1px) !important;
 }
 
@@ -200,7 +385,7 @@ section[data-testid="stSidebar"] {
 }
 .streamlit-expanderHeader:hover {
     border-color: var(--border-glow) !important;
-    background: rgba(15, 23, 42, 0.8) !important;
+    background: var(--glass) !important;
 }
 
 /* TABS */
@@ -211,7 +396,7 @@ section[data-testid="stSidebar"] {
     gap: 12px !important;
 }
 .stTabs [data-baseweb="tab"] {
-    background: linear-gradient(145deg, rgba(17, 24, 39, 0.9), rgba(30, 41, 59, 0.7)) !important;
+    background: var(--card) !important;
     border-radius: 10px !important;
     border: 1px solid var(--glass-border) !important;
     font-weight: 600 !important;
@@ -239,6 +424,12 @@ section[data-testid="stSidebar"] {
     font-family: 'Inter', sans-serif !important;
     backdrop-filter: blur(12px) !important;
     transition: all 0.3s ease !important;
+}
+.stTextInput > div > div > input::placeholder,
+.stTextArea > div > div > textarea::placeholder,
+.stSelectbox > div > div > div::placeholder {
+    color: var(--text2) !important;
+    opacity: 1 !important;
 }
 .stTextInput > div > div > input:focus,
 .stTextArea > div > div > textarea:focus {
@@ -398,7 +589,7 @@ hr {
     padding: 14px 18px;
     margin: 8px 0;
     max-width: 85%;
-    color: #e2e8f0;
+    color: var(--text);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     animation: slideUp 0.3s ease-out;
     transition: all 0.3s ease;
@@ -416,7 +607,7 @@ hr {
     margin: 8px 0;
     max-width: 85%;
     margin-left: auto;
-    color: #e2e8f0;
+    color: var(--text);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     animation: slideUp 0.3s ease-out;
     transition: all 0.3s ease;
@@ -433,19 +624,19 @@ hr {
     margin-bottom: 6px;
     display: block;
 }
-.chat-label-customer { color: #60a5fa; }
-.chat-label-agent { color: #34d399; }
+.chat-label-customer { color: var(--accent); }
+.chat-label-agent { color: var(--green); }
 
 /* RISK BADGES */
-.risk-low { background: linear-gradient(135deg, #059669, #10b981); color: white; }
-.risk-medium { background: linear-gradient(135deg, #d97706, #f59e0b); color: white; }
-.risk-high { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
-.risk-critical { background: linear-gradient(135deg, #991b1b, #dc2626); color: white; animation: pulse 1.5s infinite; }
+.risk-low { background: linear-gradient(135deg, #059669, #10b981); color: var(--text-on-accent); }
+.risk-medium { background: linear-gradient(135deg, #d97706, #f59e0b); color: var(--text-on-accent); }
+.risk-high { background: linear-gradient(135deg, #dc2626, #ef4444); color: var(--text-on-accent); }
+.risk-critical { background: linear-gradient(135deg, #991b1b, #dc2626); color: var(--text-on-accent); animation: pulse 1.5s infinite; }
 
 /* HUMOR BADGES */
 .roast-badge {
     background: linear-gradient(135deg, #dc2626, #ef4444);
-    color: white;
+    color: var(--text-on-accent);
     padding: 10px 16px;
     border-radius: 12px;
     border-left: 4px solid #f87171;
@@ -456,7 +647,7 @@ hr {
 }
 .compliment-badge {
     background: linear-gradient(135deg, #059669, #10b981);
-    color: white;
+    color: var(--text-on-accent);
     padding: 10px 16px;
     border-radius: 12px;
     border-left: 4px solid #34d399;
@@ -467,7 +658,7 @@ hr {
 }
 .roasty-tip {
     background: linear-gradient(135deg, #581c87, #7c3aed);
-    color: #e2e8f0;
+    color: var(--text-on-accent);
     padding: 10px 16px;
     border-radius: 12px;
     border-left: 4px solid #a78bfa;
@@ -599,7 +790,7 @@ hr {
 
 /* SIDEBAR SESSION CARD */
 .session-card {
-    background: linear-gradient(145deg, rgba(17, 24, 39, 0.8), rgba(30, 41, 59, 0.6));
+    background: var(--surface);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     padding: 12px;
@@ -662,6 +853,28 @@ def init_session_state():
         st.session_state.report = None
     if "humor_mode" not in st.session_state:
         st.session_state.humor_mode = False
+    if "theme" not in st.session_state:
+        st.session_state.theme = "dark"
+    if "session_search" not in st.session_state:
+        st.session_state.session_search = ""
+    if "session_filter_mode" not in st.session_state:
+        st.session_state.session_filter_mode = "All"
+    if "risk_threshold" not in st.session_state:
+        st.session_state.risk_threshold = 70
+    if "ui_interaction_mode" not in st.session_state:
+        st.session_state.ui_interaction_mode = "simulator"
+    if "ui_agent_name" not in st.session_state:
+        st.session_state.ui_agent_name = "Agent"
+    if "ui_product_context" not in st.session_state:
+        st.session_state.ui_product_context = "SaaS Platform"
+    if "scenario_choice" not in st.session_state:
+        st.session_state.scenario_choice = None
+    if "selected_transcript" not in st.session_state:
+        st.session_state.selected_transcript = None
+    if "template_name" not in st.session_state:
+        st.session_state.template_name = ""
+    if "templates" not in st.session_state:
+        st.session_state.templates = load_templates()
 
 
 def auto_seed_kb():
@@ -678,12 +891,19 @@ def reset_session():
 
 def render_sidebar():
     with st.sidebar:
+        theme = st.selectbox(
+            "Theme",
+            options=["Dark", "Light"],
+            index=0 if st.session_state.theme == "dark" else 1,
+            key="theme",
+            help="Toggle between dark and light UI themes.",
+        )
         st.markdown(
             '<div style="text-align:center;padding:16px 0 8px">'
             '<div style="font-size:2em;filter:drop-shadow(0 0 10px rgba(99,102,241,0.5))">🎯</div>'
             '<div style="font-size:1.2em;font-weight:800;background:linear-gradient(135deg,#6366f1,#8b5cf6);'
             '-webkit-background-clip:text;-webkit-text-fill-color:transparent">CoachAI</div>'
-            '<div style="color:#94a3b8;font-size:0.75em;margin-top:2px">Real-time AI coaching</div>'
+            '<div style="color:var(--text-muted);font-size:0.75em;margin-top:2px">Real-time AI coaching</div>'
             '</div>',
             unsafe_allow_html=True,
         )
@@ -692,14 +912,15 @@ def render_sidebar():
         humor_on = st.session_state.get("humor_mode", False)
         humor_icon = "🔥" if humor_on else "😴"
         humor_label = "Humor ON" if humor_on else "Humor OFF"
-        humor_color = "#ef4444" if humor_on else "#64748b"
+        humor_color = "var(--text-danger)" if humor_on else "var(--text-muted)"
+        humor_border = "#ef4444" if humor_on else "#64748b"
         st.markdown(
-            f'<div style="background:linear-gradient(145deg,rgba({("239,68,68,0.15") if humor_on else ("100,116,139,0.1")},rgba(30,41,59,0.7));'
-            f'border:1px solid {humor_color}33;border-radius:12px;padding:10px 14px;margin-bottom:12px;'
+            f'<div style="background:linear-gradient(145deg,rgba({("239,68,68,0.15") if humor_on else ("100,116,139,0.1")},var(--surface-overlay));'
+            f'border:1px solid {humor_border}33;border-radius:12px;padding:10px 14px;margin-bottom:12px;'
             f'display:flex;align-items:center;gap:10px">'
             f'<span style="font-size:1.5em">{humor_icon}</span>'
             f'<div><div style="font-weight:700;color:{humor_color}">{humor_label}</div>'
-            f'<div style="font-size:0.7em;color:#94a3b8">Roasts & roasty tips</div></div></div>',
+            f'<div style="font-size:0.7em;color:var(--text-muted)">Roasts & roasty tips</div></div></div>',
             unsafe_allow_html=True,
         )
 
@@ -732,7 +953,25 @@ def render_sidebar():
         st.divider()
 
         st.markdown("#### Past Sessions")
+        st.text_input("Search sessions", key="session_search", placeholder="Search by agent, product, or ID")
+        filter_mode = st.selectbox(
+            "Filter by mode",
+            options=["All", "Simulator", "Manual", "Replay"],
+            key="session_filter_mode",
+            index=["All", "Simulator", "Manual", "Replay"].index(st.session_state.session_filter_mode),
+        )
         sessions = database.get_all_sessions()
+        if st.session_state.session_search:
+            query = st.session_state.session_search.lower()
+            sessions = [
+                s for s in sessions
+                if query in s["id"].lower()
+                or query in s["config"].get("agent_name", "").lower()
+                or query in s["config"].get("product_context", "").lower()
+                or query in s["config"].get("mode", "").lower()
+            ]
+        if filter_mode != "All":
+            sessions = [s for s in sessions if s["config"].get("mode", "").title() == filter_mode]
         if sessions:
             for s in sessions[:5]:
                 config = s.get("config", {})
@@ -744,10 +983,10 @@ def render_sidebar():
                 st.markdown(
                     f'<div class="{card_class}">'
                     f'<div style="display:flex;justify-content:space-between;align-items:center">'
-                    f'<span style="font-weight:600;color:#f1f5f9">{config.get("mode", "?").title()}</span>'
+                    f'<span style="font-weight:600;color:var(--text)">{config.get("mode", "?").title()}</span>'
                     f'<span style="font-size:0.7em;color:{status_color};font-weight:600">{status}</span>'
                     f'</div>'
-                    f'<div style="font-size:0.75em;color:#94a3b8;margin-top:4px">{created}</div>'
+                    f'<div style="font-size:0.75em;color:var(--text-muted);margin-top:4px">{created}</div>'
                     f'</div>',
                     unsafe_allow_html=True,
                 )
@@ -758,6 +997,34 @@ def render_sidebar():
             st.caption("No past sessions yet.")
 
         st.divider()
+        st.markdown("#### Session Templates")
+        template_name = st.text_input("Template name", value=st.session_state.template_name)
+        if st.button("Save template", type="secondary", use_container_width=True):
+            current_templates = st.session_state.templates or {}
+            current_templates[template_name or f"Template {len(current_templates)+1}"] = {
+                "mode": st.session_state.ui_interaction_mode,
+                "agent_name": st.session_state.ui_agent_name,
+                "product_context": st.session_state.ui_product_context,
+                "risk_threshold": st.session_state.risk_threshold,
+            }
+            save_templates(current_templates)
+            st.session_state.templates = current_templates
+            st.success("Template saved")
+
+        if st.session_state.templates:
+            selected_template = st.selectbox(
+                "Load template",
+                options=[f"{k} ({v['mode']})" for k, v in st.session_state.templates.items()],
+            )
+            if st.button("Apply template", type="secondary", use_container_width=True):
+                name = selected_template.split(" (")[0]
+                template = st.session_state.templates.get(name)
+                if template:
+                    st.session_state.ui_interaction_mode = template["mode"]
+                    st.session_state.ui_agent_name = template["agent_name"]
+                    st.session_state.ui_product_context = template["product_context"]
+                    st.session_state.risk_threshold = template["risk_threshold"]
+                    st.success(f"Loaded template '{name}'")
         st.caption("v2.0 | Groq LLM + RoBERTa")
 
 
@@ -812,6 +1079,7 @@ def setup_page():
                 "replay": "Replay (Real transcripts)",
             }.get(x, x),
             horizontal=True,
+            key="setup_mode",
         )
 
         st.markdown("<div style='height: 12px'></div>", unsafe_allow_html=True)
@@ -835,7 +1103,7 @@ def setup_page():
                     if rs["id"] == scenario_choice:
                         selected_real = rs
                         break
-                emotional_start = st.selectbox("Starting emotion", ["frustrated", "angry", "neutral", "satisfied"])
+                emotional_start = st.selectbox("Starting emotion", ["frustrated", "angry", "neutral", "satisfied"], key="emotional_start")
 
             elif mode == "replay":
                 transcripts = st.session_state.orchestrator.list_transcripts()
@@ -853,47 +1121,52 @@ def setup_page():
                     st.info("Place .json or .txt transcripts in data/transcripts/")
 
         with col1:
-            agent_name = st.text_input("Your name", value=st.session_state.get("agent_name", "Agent"))
+            agent_name = st.text_input(
+                "Your name",
+                value=st.session_state.get("ui_agent_name", "Agent"),
+                key="agent_name_input",
+            )
             if mode == "simulator":
                 default_company = selected_real.get("product_context", "SaaS Platform") if selected_real else "SaaS Platform"
                 product_context = st.text_input(
                     "Company / Platform", value=default_company, disabled=True,
-                    help="Auto-detected from selected scenario."
+                    help="Auto-detected from selected scenario.", key="product_context_input"
                 )
             else:
                 product_context = st.text_input(
                     "Company / Platform", value="SaaS Platform",
-                    help="What company/product are you supporting?"
+                    help="What company/product are you supporting?",
+                    key="product_context_input"
                 )
 
         # Render description boxes outside columns to fix vertical alignment
         if mode == "simulator" and selected_real:
             st.markdown(
-                f'<div style="background:linear-gradient(145deg,rgba(99,102,241,0.08),rgba(30,41,59,0.7));'
+                f'<div style="background:linear-gradient(145deg,rgba(99,102,241,0.08),var(--surface-overlay));'
                 f'border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:12px;margin:8px 0">'
-                f'<div style="font-weight:600;color:#f1f5f9;font-size:0.9em;margin-bottom:4px">{selected_real["title"]}</div>'
-                f'<div style="color:#94a3b8;font-size:0.8em;line-height:1.4">{selected_real.get("customer_persona", "")}</div>'
-                f'<div style="color:#6366f1;font-size:0.75em;margin-top:6px">Product: {selected_real.get("product_context", "Platform")}</div>'
+                f'<div style="font-weight:600;color:var(--text);font-size:0.9em;margin-bottom:4px">{selected_real["title"]}</div>'
+                f'<div style="color:var(--text-muted);font-size:0.8em;line-height:1.4">{selected_real.get("customer_persona", "")}</div>'
+                f'<div style="color:var(--accent);font-size:0.75em;margin-top:6px">Product: {selected_real.get("product_context", "Platform")}</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
         elif mode == "replay" and selected_transcript:
             st.markdown(
-                f'<div style="background:linear-gradient(145deg,rgba(99,102,241,0.08),rgba(30,41,59,0.7));'
+                f'<div style="background:linear-gradient(145deg,rgba(99,102,241,0.08),var(--surface-overlay));'
                 f'border:1px solid rgba(0,200,83,0.2);border-radius:12px;padding:10px;margin:8px 0">'
-                f'<div style="color:#66bb6a;font-size:0.85em;font-weight:600">Real transcript: {transcript_labels.get(selected_transcript, selected_transcript)}</div>'
-                f'<div style="color:#94a3b8;font-size:0.75em">Step through message by message with live coaching</div>'
+                f'<div style="color:var(--green);font-size:0.85em;font-weight:600">Real transcript: {transcript_labels.get(selected_transcript, selected_transcript)}</div>'
+                f'<div style="color:var(--text-muted);font-size:0.75em">Step through message by message with live coaching</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
 
         st.markdown(
-            f'<div style="background:linear-gradient(145deg,rgba(16,185,129,0.1),rgba(30,41,59,0.7));'
+            f'<div style="background:linear-gradient(145deg,rgba(16,185,129,0.1),var(--surface-overlay));'
             f'border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:12px 16px;'
             f'display:flex;align-items:center;gap:10px;margin-bottom:16px">'
             f'<span style="font-size:1.5em">📚</span>'
-            f'<div><div style="font-weight:600;color:#10b981">{kb_count} articles ready</div>'
-            f'<div style="font-size:0.75em;color:#94a3b8">Upload more in the sidebar</div></div></div>',
+            f'<div><div style="font-weight:600;color:var(--green)">{kb_count} articles ready</div>'
+            f'<div style="font-size:0.75em;color:var(--text-muted)">Upload more in the sidebar</div></div></div>',
             unsafe_allow_html=True,
         )
 
@@ -901,27 +1174,27 @@ def setup_page():
         col_h, col_hi, col_m = st.columns(3)
         with col_h:
             st.markdown(
-                '<div style="background:linear-gradient(145deg,rgba(239,68,68,0.08),rgba(30,41,59,0.7));'
+                '<div style="background:linear-gradient(145deg,rgba(239,68,68,0.08),var(--surface-overlay));'
                 'border:1px solid rgba(239,68,68,0.15);border-radius:16px;padding:20px">'
                 '<div style="font-size:1.5em;margin-bottom:8px">🔥</div>'
-                '<div style="font-weight:700;font-size:1.1em;color:#f1f5f9;margin-bottom:6px">Humor Mode</div>'
-                '<div style="color:#94a3b8;font-size:0.85em;line-height:1.5">'
+                '<div style="font-weight:700;font-size:1.1em;color:var(--text);margin-bottom:6px">Humor Mode</div>'
+                '<div style="color:var(--text-muted);font-size:0.85em;line-height:1.5">'
                 'Bad responses get roasted. Good ones get praised. '
                 'Roasty tips keep it fun.<br><br>'
-                '<span style="color:#ef4444">Roasts</span> show in red &bull; '
-                '<span style="color:#a78bfa">Tips</span> in purple &bull; '
-                '<span style="color:#34d399">Compliments</span> in green</div></div>',
+                '<span style="color:var(--red)">Roasts</span> show in red &bull; '
+                '<span style="color:var(--accent2)">Tips</span> in purple &bull; '
+                '<span style="color:var(--green)">Compliments</span> in green</div></div>',
                 unsafe_allow_html=True,
             )
             humor_mode = st.toggle("Enable Humor Mode", value=st.session_state.get("humor_mode", False))
 
         with col_hi:
             st.markdown(
-                '<div style="background:linear-gradient(145deg,rgba(245,158,11,0.08),rgba(30,41,59,0.7));'
+                '<div style="background:linear-gradient(145deg,rgba(245,158,11,0.08),var(--surface-overlay));'
                 'border:1px solid rgba(245,158,11,0.15);border-radius:16px;padding:20px">'
                 '<div style="font-size:1.5em;margin-bottom:8px">🇮🇳</div>'
-                '<div style="font-weight:700;font-size:1.1em;color:#f1f5f9;margin-bottom:6px">Hinglish Mode</div>'
-                '<div style="color:#94a3b8;font-size:0.85em;line-height:1.5">'
+                '<div style="font-weight:700;font-size:1.1em;color:var(--text);margin-bottom:6px">Hinglish Mode</div>'
+                '<div style="color:var(--text-muted);font-size:0.85em;line-height:1.5">'
                 'Simulate authentic Tier-2/Tier-3 customers who actively mix Hindi and English in their chats.<br><br>'
                 'Expect phrases like <i>"mera account chal nahi raha hai"</i> and <i>"please check karo yaar"</i>.</div></div>',
                 unsafe_allow_html=True,
@@ -946,6 +1219,15 @@ def setup_page():
                 format_func=get_model_label,
                 index=1,
             )
+            st.markdown("<div style='margin-top:16px'></div>", unsafe_allow_html=True)
+            threshold = st.slider(
+                "Escalation sensitivity",
+                min_value=0, max_value=100,
+                value=st.session_state.risk_threshold,
+                help="Higher values make the app more sensitive to escalation risk.",
+            )
+            st.caption(f"Risk threshold: {threshold}%")
+            st.session_state.risk_threshold = threshold
 
         st.session_state.humor_mode = humor_mode
         st.session_state.hinglish_mode = hinglish_mode
@@ -967,21 +1249,23 @@ def setup_page():
     if st.button("Start Session", type="primary", use_container_width=True):
         st.session_state.humor_mode = humor_mode
         st.session_state.ml_tier = ml_tier
+        st.session_state.ui_agent_name = agent_name
+        st.session_state.ui_product_context = product_context
+        st.session_state.ui_interaction_mode = mode
         _start_session(
             mode, agent_name, product_context,
             scenario_choice if mode == "simulator" else None,
             emotional_start if mode == "simulator" else None,
             selected_transcript if mode == "replay" else None,
+            st.session_state.risk_threshold / 100.0,
         )
-
-
 def _start_quick(mode: str):
     scenarios = st.session_state.orchestrator.list_scenarios()
     choice = list(scenarios.keys())[0] if mode == "simulator" and scenarios else None
     _start_session(mode, "Agent", "SaaS Platform", choice, "neutral", None)
 
 
-def _start_session(mode, agent_name, product_context, scenario_choice, emotional_start, transcript_name):
+def _start_session(mode, agent_name, product_context, scenario_choice, emotional_start, transcript_name, risk_threshold=0.7):
     scenario = None
     transcript_path = None
     if mode == "simulator" and scenario_choice:
@@ -1005,7 +1289,7 @@ def _start_session(mode, agent_name, product_context, scenario_choice, emotional
     session = st.session_state.orchestrator.start_session(
         mode=InteractionMode(mode), agent_name=agent_name,
         product_context=product_context, scenario=scenario,
-        transcript_path=transcript_path,
+        transcript_path=transcript_path, risk_threshold=risk_threshold,
     )
 
     st.session_state.orchestrator.conversation_manager.humor_mode = st.session_state.get("humor_mode", False)
@@ -1036,7 +1320,7 @@ def coaching_page():
 
     humor_on = st.session_state.get("humor_mode", False)
     humor_badge = (
-        '<span style="background:linear-gradient(135deg,#dc2626,#ef4444);color:white;padding:3px 10px;'
+        '<span style="background:linear-gradient(135deg,#dc2626,#ef4444);color:var(--text-on-accent);padding:3px 10px;'
         'border-radius:8px;font-size:0.7em;font-weight:700;margin-left:8px;animation:pulse 2s infinite">'
         'HUMOR ON</span>'
     ) if humor_on else ""
@@ -1045,16 +1329,16 @@ def coaching_page():
         f'<div style="display:flex;align-items:center;gap:16px;padding:12px 0">'
         f'<div style="background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(139,92,246,0.1));'
         f'border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:8px 16px">'
-        f'<span style="color:#94a3b8;font-size:0.75em;font-weight:600">MODE</span><br>'
-        f'<span style="color:#f1f5f9;font-weight:700">{mode_label}</span></div>'
-        f'<div style="background:linear-gradient(145deg,rgba(6,182,212,0.15),rgba(30,41,59,0.7));'
+        f'<span style="color:var(--text-muted);font-size:0.75em;font-weight:600">MODE</span><br>'
+        f'<span style="color:var(--text);font-weight:700">{mode_label}</span></div>'
+        f'<div style="background:linear-gradient(145deg,rgba(6,182,212,0.15),var(--surface-overlay));'
         f'border:1px solid rgba(6,182,212,0.2);border-radius:12px;padding:8px 16px">'
-        f'<span style="color:#94a3b8;font-size:0.75em;font-weight:600">TURN</span><br>'
-        f'<span style="color:#f1f5f9;font-weight:700">{session.current_turn}</span></div>'
-        f'<div style="background:linear-gradient(145deg,rgba(16,185,129,0.15),rgba(30,41,59,0.7));'
+        f'<span style="color:var(--text-muted);font-size:0.75em;font-weight:600">TURN</span><br>'
+        f'<span style="color:var(--text);font-weight:700">{session.current_turn}</span></div>'
+        f'<div style="background:linear-gradient(145deg,rgba(16,185,129,0.15),var(--surface-overlay));'
         f'border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:8px 16px">'
-        f'<span style="color:#94a3b8;font-size:0.75em;font-weight:600">PRODUCT</span><br>'
-        f'<span style="color:#f1f5f9;font-weight:700">{session.config.product_context}</span></div>'
+        f'<span style="color:var(--text-muted);font-size:0.75em;font-weight:600">PRODUCT</span><br>'
+        f'<span style="color:var(--text);font-weight:700">{session.config.product_context}</span></div>'
         f'{humor_badge}'
         f'<div style="margin-left:auto">'
         f'</div></div>',
@@ -1129,7 +1413,7 @@ def coaching_page():
 
     with input_row[0]:
         st.markdown(
-            '<div style="font-weight:700;color:#60a5fa;margin-bottom:8px;display:flex;align-items:center;gap:6px">'
+            '<div style="font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px">'
             '<span style="font-size:1.2em">👤</span> Customer</div>',
             unsafe_allow_html=True,
         )
@@ -1176,7 +1460,7 @@ def coaching_page():
 
     with input_row[1]:
         st.markdown(
-            '<div style="font-weight:700;color:#34d399;margin-bottom:8px;display:flex;align-items:center;gap:6px">'
+            '<div style="font-weight:700;color:var(--green);margin-bottom:8px;display:flex;align-items:center;gap:6px">'
             '<span style="font-size:1.2em">🤖</span> You (Agent)</div>',
             unsafe_allow_html=True,
         )
@@ -1209,6 +1493,14 @@ def report_page():
 
     if st.session_state.report:
         render_performance_report(st.session_state.report)
+        md = generate_markdown_report(st.session_state.report, st.session_state.session)
+        st.download_button(
+            "Export Report as Markdown",
+            data=md,
+            file_name=f"session_report_{st.session_state.report.session_id}.md",
+            mime="text/markdown",
+            use_container_width=True,
+        )
     else:
         st.warning("No report available.")
 
@@ -1272,6 +1564,8 @@ def analytics_page():
 
 def main():
     init_session_state()
+    selected_theme = st.session_state.get("theme", "dark").lower()
+    apply_theme(selected_theme)
     page_map = {
         "setup": setup_page,
         "coaching": coaching_page,

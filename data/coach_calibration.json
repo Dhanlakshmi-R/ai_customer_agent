@@ -442,6 +442,69 @@
       "had_suggestion": true,
       "tip_count": 3,
       "next_sentiment": "angry"
+    },
+    {
+      "quality_score": 0.48,
+      "was_shown": true,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.48,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.48,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": "positive"
+    },
+    {
+      "quality_score": 0.82,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.82,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.82,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": "positive"
+    },
+    {
+      "quality_score": 0.82,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.78,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": null
+    },
+    {
+      "quality_score": 0.78,
+      "was_shown": false,
+      "had_suggestion": true,
+      "tip_count": 1,
+      "next_sentiment": null
     }
   ],
   "TestBot2": [

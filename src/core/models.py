@@ -69,6 +69,7 @@ class SessionConfig(BaseModel):
     product_context: str = ""
     agent_name: str = "Agent"
     transcript_path: Optional[str] = None
+    risk_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
 
 
 class IntentAnalysis(BaseModel):
@@ -113,7 +114,7 @@ class TurnAnalysis(BaseModel):
 
 
 class ResolutionQuality(BaseModel):
-    score: float = Field(ge=0.0, le=1.0)
+    score: float = Field(default=0.0, ge=0.0, le=1.0)
     issue_resolved: bool = False
     customer_satisfied: bool = False
     escalation_needed: bool = False

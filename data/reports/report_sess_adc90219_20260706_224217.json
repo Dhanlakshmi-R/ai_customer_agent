@@ -1,0 +1,21 @@
+{
+  "session_id": "sess_adc90219",
+  "agent_name": "Agent",
+  "interaction_mode": "replay",
+  "total_turns": 0,
+  "sentiment_journey": [],
+  "resolution_quality": {
+    "score": 0.0,
+    "issue_resolved": false,
+    "customer_satisfied": false,
+    "escalation_needed": false
+  },
+  "overall_score": 0.2,
+  "coaching_recommendations": [
+    "Review knowledge base responses to identify and fill common knowledge gaps.",
+    "Consider role-playing high-stress scenarios to build confidence with difficult customers."
+  ],
+  "escalation_triggers": [],
+  "knowledge_gaps": [],
+  "generated_at": "2026-07-06 22:42:17.288936"
+}

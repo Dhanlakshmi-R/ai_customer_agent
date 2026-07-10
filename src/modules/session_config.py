@@ -19,6 +19,7 @@ class SessionConfigModule:
         product_context: str = "",
         scenario: Scenario | None = None,
         transcript_path: str | None = None,
+        risk_threshold: float = 0.7,
     ) -> SessionState:
         session_id = f"sess_{uuid.uuid4().hex[:8]}"
 
@@ -30,6 +31,7 @@ class SessionConfigModule:
             transcript_path=transcript_path,
         )
 
+        config.risk_threshold = risk_threshold
         return SessionState(session_id=session_id, config=config)
 
     def create_scenario(
