@@ -1,0 +1,28 @@
+{
+  "session_id": "sess_18b6e330",
+  "agent_name": "Agent",
+  "interaction_mode": "simulator",
+  "total_turns": 1,
+  "sentiment_journey": [
+    {
+      "turn": 1,
+      "sentiment": "neutral",
+      "frustration": 0.1,
+      "satisfaction_trend": 0.0
+    }
+  ],
+  "resolution_quality": {
+    "score": 0.6,
+    "issue_resolved": true,
+    "customer_satisfied": false,
+    "escalation_needed": false
+  },
+  "overall_score": 0.5,
+  "coaching_recommendations": [
+    "Consider role-playing high-stress scenarios to build confidence with difficult customers.",
+    "Review knowledge base responses to identify and fill common knowledge gaps."
+  ],
+  "escalation_triggers": [],
+  "knowledge_gaps": [],
+  "generated_at": "2026-07-10 19:11:21.096182"
+}

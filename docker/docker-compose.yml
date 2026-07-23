@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./sql_app.db
+      - SECRET_KEY=SUPER_SECRET_JWT_KEY_FOR_COACHING_ASSISTANT_2026_PRODUCTION
+    volumes:
+      - ../uploads:/app/uploads
+      - ../generated_reports:/app/generated_reports
+      - ../chroma_db:/app/chroma_db
+
+  frontend:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
