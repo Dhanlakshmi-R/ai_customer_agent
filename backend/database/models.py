@@ -1,6 +1,6 @@
 import datetime
 from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, Text, JSON
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from backend.database.connection import Base
 
 class User(Base):
@@ -82,6 +82,18 @@ class CoachingAnalysis(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     message = relationship("Message", back_populates="analysis")
+    feedback_items = relationship("CoachingFeedback", back_populates="analysis", cascade="all, delete-orphan")
+
+class CoachingFeedback(Base):
+    __tablename__ = "coaching_feedback"
+
+    id = Column(String, primary_key=True, index=True)
+    analysis_id = Column(String, ForeignKey("coaching_analysis.id"), nullable=False)
+    user_id = Column(String, nullable=True)
+    rating = Column(String, nullable=False) # helpful, not_helpful
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    analysis = relationship("CoachingAnalysis", back_populates="feedback_items")
 
 class Report(Base):
     __tablename__ = "reports"

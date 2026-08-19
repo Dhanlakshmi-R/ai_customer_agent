@@ -89,6 +89,8 @@ async def get_session_details(
         analysis_data = None
         if msg.analysis:
             analysis_data = {
+                "id": msg.analysis.id,
+                "message_id": msg.analysis.message_id,
                 "intent": msg.analysis.intent,
                 "sentiment": msg.analysis.sentiment,
                 "emotion": msg.analysis.emotion,
