@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from backend.config import settings
 from backend.database.connection import init_db, AsyncSessionLocal
 from backend.database.repository import Repository
+from backend.rag.vectorstore import auto_seed_kb
 from backend.api import auth, session, chat, rag, report, analytics, settings as settings_api
 
 @asynccontextmanager
@@ -27,6 +28,9 @@ async def lifespan(app: FastAPI):
         if not agent:
             await repo.create_user("agent@coach.ai", "Agent@123456", "Support Agent Demo", "agent")
             
+    # Auto-seed Knowledge Base in ChromaDB if empty
+    auto_seed_kb()
+
     yield
 
 app = FastAPI(

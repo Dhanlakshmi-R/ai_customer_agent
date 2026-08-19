@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Sparkles, Lock, Mail, User as UserIcon, Shield, ArrowRight } from 'lucide-react';
+import { Sparkles, Lock, Mail, User as UserIcon, ArrowRight } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { api } from '../services/api';
 
@@ -8,7 +8,6 @@ export const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState('agent');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { setUser } = useStore();
@@ -23,8 +22,7 @@ export const RegisterPage: React.FC = () => {
       const res = await api.post('/auth/register', {
         email,
         password,
-        full_name: fullName,
-        role
+        full_name: fullName
       });
       setUser(res.data.user, res.data.access_token);
       navigate('/console');
@@ -88,19 +86,6 @@ export const RegisterPage: React.FC = () => {
               placeholder="••••••••"
               className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
             />
-          </div>
-
-          <div>
-            <label className="block text-slate-400 mb-1 font-medium">Role</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
-            >
-              <option value="agent">Support Agent</option>
-              <option value="trainer">Trainer</option>
-              <option value="admin">Admin</option>
-            </select>
           </div>
 
           <button

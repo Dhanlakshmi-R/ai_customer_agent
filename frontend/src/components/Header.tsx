@@ -3,14 +3,20 @@ import { Search, Sun, Moon, Bell, PanelLeft, Command } from 'lucide-react';
 import { useStore } from '../store/useStore';
 
 export const Header: React.FC = () => {
-  const { theme, toggleTheme, user } = useStore();
+  const { theme, toggleTheme, user, setMobileNavOpen } = useStore();
   const [showNotifications, setShowNotifications] = useState(false);
 
   return (
     <header className="h-16 border-b border-slate-800 bg-slate-900/70 backdrop-blur-xl px-4 md:px-6 flex items-center justify-between sticky top-0 z-20">
       {/* Search Input */}
       <div className="flex items-center gap-3 min-w-0">
-        <div className="md:hidden w-9 h-9 rounded-lg bg-indigo-500/15 text-indigo-300 flex items-center justify-center"><PanelLeft className="w-4 h-4" /></div>
+        <button
+          onClick={() => setMobileNavOpen(true)}
+          className="md:hidden w-9 h-9 rounded-lg bg-indigo-500/15 text-indigo-300 flex items-center justify-center hover:bg-indigo-500/25 transition"
+          title="Open navigation"
+        >
+          <PanelLeft className="w-4 h-4" />
+        </button>
         <div className="relative w-44 sm:w-72 md:w-80">
         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
         <input

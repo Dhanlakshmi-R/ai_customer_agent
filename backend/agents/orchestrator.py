@@ -2,23 +2,20 @@ import datetime
 from typing import Dict, Any, List, TypedDict, Optional
 from langgraph.graph import StateGraph, END
 
-from backend.agents.intent_sentiment_agent import IntentSentimentAgent
+from backend.agents.combined_agent import CombinedAnalysisAgent
 from backend.agents.knowledge_agent import KnowledgeRecommendationAgent
-from backend.agents.coaching_agent import CoachingAgent
-from backend.agents.escalation_agent import EscalationRiskAgent
 from backend.agents.simulator_agent import CustomerSimulatorAgent
 
 # Initialize agents
-intent_sentiment_agent = IntentSentimentAgent()
+combined_agent = CombinedAnalysisAgent()
 knowledge_agent = KnowledgeRecommendationAgent()
-coaching_agent = CoachingAgent()
-escalation_agent = EscalationRiskAgent()
 simulator_agent = CustomerSimulatorAgent()
 
 class AgentState(TypedDict):
     session_id: str
     customer_message: str
     agent_draft: Optional[str]
+    feedback_context: Optional[str]
     intent: Optional[str]
     sentiment: Optional[str]
     emotion: Optional[str]
@@ -44,70 +41,46 @@ class ConversationOrchestrator:
         """Constructs LangGraph multi-agent orchestration workflow."""
         builder = StateGraph(AgentState)
 
-        # Node 1: Intent & Sentiment
-        def process_intent_sentiment(state: AgentState) -> Dict[str, Any]:
-            res = intent_sentiment_agent.analyze(state["customer_message"])
-            return res
-
-        # Node 2: Knowledge Recommendation RAG
+        # Node 1: Knowledge Recommendation RAG — fast, no LLM. Runs first so the
+        # combined analysis is grounded in real support docs (and the citations
+        # are guaranteed to reach the final state / knowledge panel).
         def process_knowledge(state: AgentState) -> Dict[str, Any]:
+            existing = state.get("knowledge_citations") or []
+            if existing:
+                return {"knowledge_citations": existing}
             query = state["customer_message"]
-            intent = state.get("intent", "General")
-            citations = knowledge_agent.retrieve(query=query, intent=intent)
+            citations = knowledge_agent.retrieve(query=query)
             return {"knowledge_citations": citations}
 
-        # Node 3: Coaching & Response Suggestion
-        def process_coaching(state: AgentState) -> Dict[str, Any]:
-            res = coaching_agent.evaluate_and_suggest(
+        # Node 2: Combined LLM analysis. A single LLM call returns intent,
+        # sentiment, coaching scores, escalation risk and a RAG-grounded reply,
+        # so a turn costs one API round-trip (~1.5s) instead of 3-4 serial calls.
+        def process_combined(state: AgentState) -> Dict[str, Any]:
+            res = combined_agent.analyze(
                 customer_message=state["customer_message"],
-                intent=state.get("intent", "General"),
-                sentiment=state.get("sentiment", "Neutral"),
+                agent_draft=state.get("agent_draft", ""),
                 knowledge_citations=state.get("knowledge_citations", []),
-                agent_draft=state.get("agent_draft", "")
+                feedback_context=state.get("feedback_context", ""),
             )
             return res
 
-        # Node 4: Escalation Risk Monitor
-        def process_escalation(state: AgentState) -> Dict[str, Any]:
-            res = escalation_agent.evaluate_risk(
-                intent=state.get("intent", "General"),
-                sentiment=state.get("sentiment", "Neutral"),
-                frustration=state.get("frustration", 0.0),
-                urgency=state.get("urgency", "Low"),
-                customer_message=state["customer_message"]
-            )
-            return {
-                "escalation_risk": res["escalation_risk"],
-                "escalation_reason": res["reason"],
-                "recommended_action": res["recommended_action"]
-            }
-
         # Add Nodes
-        builder.add_node("intent_sentiment", process_intent_sentiment)
         builder.add_node("knowledge_rag", process_knowledge)
-        builder.add_node("coaching", process_coaching)
-        builder.add_node("escalation", process_escalation)
+        builder.add_node("intent_sentiment", process_combined)
 
-        # Flow Edges
-        builder.set_entry_point("intent_sentiment")
-        builder.add_edge("intent_sentiment", "knowledge_rag")
-        builder.add_edge("knowledge_rag", "coaching")
-        builder.add_edge("coaching", "escalation")
-        builder.add_edge("escalation", END)
+        # Flow Edges: knowledge is a prerequisite of the combined analysis.
+        builder.set_entry_point("knowledge_rag")
+        builder.add_edge("knowledge_rag", "intent_sentiment")
+        builder.add_edge("intent_sentiment", END)
 
         self.workflow = builder.compile()
 
-    def run_turn_pipeline(
-        self,
-        session_id: str,
-        customer_message: str,
-        agent_draft: str = ""
-    ) -> Dict[str, Any]:
-        """Executes full multi-agent pipeline for a single conversation turn."""
-        initial_state: AgentState = {
+    def _initial_state(self, session_id: str, customer_message: str, agent_draft: str, feedback_context: str = "") -> AgentState:
+        return {
             "session_id": session_id,
             "customer_message": customer_message,
             "agent_draft": agent_draft,
+            "feedback_context": feedback_context,
             "intent": None,
             "sentiment": None,
             "emotion": None,
@@ -123,10 +96,42 @@ class ConversationOrchestrator:
             "improvement_tips": None,
             "escalation_risk": None,
             "escalation_reason": None,
-            "recommended_action": None
+            "recommended_action": None,
         }
+
+    def retrieve_citations(self, customer_message: str) -> List[Dict[str, Any]]:
+        """Runs the knowledge RAG node only (fast, no LLM) to fetch support
+        citations for a customer message. Used by the instant-refine path so
+        the knowledge panel fills in before the full LLM refinement lands."""
+        return knowledge_agent.retrieve(query=customer_message)
+
+    def run_turn_pipeline(
+        self,
+        session_id: str,
+        customer_message: str,
+        agent_draft: str = "",
+        feedback_context: str = "",
+        knowledge_citations: List[Dict[str, Any]] | None = None,
+    ) -> Dict[str, Any]:
+        """Executes full multi-agent pipeline for a single conversation turn."""
+        initial_state = self._initial_state(session_id, customer_message, agent_draft, feedback_context)
+        if knowledge_citations is not None:
+            initial_state["knowledge_citations"] = knowledge_citations
 
         result_state = self.workflow.invoke(initial_state)
         return result_state
+
+    def stream_turn_pipeline(
+        self,
+        session_id: str,
+        customer_message: str,
+        agent_draft: str = "",
+        feedback_context: str = ""
+    ):
+        """Executes multi-agent pipeline in streaming mode, yielding node outputs as they complete."""
+        initial_state = self._initial_state(session_id, customer_message, agent_draft, feedback_context)
+
+        for output in self.workflow.stream(initial_state):
+            yield output
 
 orchestrator = ConversationOrchestrator()

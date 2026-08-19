@@ -1,4 +1,6 @@
-from typing import Dict, Any, List
+from typing import Dict, Any
+from datetime import datetime, timedelta
+from collections import OrderedDict
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 
@@ -9,32 +11,34 @@ class AnalyticsEngine:
         self.db = db
 
     async def get_dashboard_summary(self) -> Dict[str, Any]:
-        """Calculates executive dashboard stats for average sentiment, escalation trends, intent frequency, and knowledge usage."""
-        
-        # Total Sessions Count
-        total_sessions_res = await self.db.execute(select(func.count(Session.id)))
-        total_sessions = total_sessions_res.scalar() or 0
+        """Real, DB-derived analytics for the executive dashboard. No synthetic/fallback values."""
 
-        # Total Messages Count
-        total_msgs_res = await self.db.execute(select(func.count(Message.id)))
-        total_messages = total_msgs_res.scalar() or 0
+        # Totals from the actual database. Sessions are only counted once they contain
+        # real messages (auto-created empty sessions are excluded).
+        total_sessions = (
+            await self.db.execute(select(func.count(func.distinct(Message.session_id))))
+        ).scalar() or 0
+        total_messages = (await self.db.execute(select(func.count(Message.id)))).scalar() or 0
+        total_documents = (await self.db.execute(select(func.count(Document.id)))).scalar() or 0
 
-        # Total Documents Count
-        total_docs_res = await self.db.execute(select(func.count(Document.id)))
-        total_documents = total_docs_res.scalar() or 0
+        # All coaching analyses that have actually run
+        analyses = (await self.db.execute(select(CoachingAnalysis))).scalars().all()
 
-        # Fetch Coaching Analyses for aggregate metrics
-        analyses_res = await self.db.execute(select(CoachingAnalysis))
-        analyses = analyses_res.scalars().all()
-
-        intent_counts = {}
+        intent_counts: Dict[str, int] = {}
         sentiment_counts = {"Positive": 0, "Neutral": 0, "Negative": 0}
         escalation_counts = {"Low": 0, "Medium": 0, "High": 0, "Critical": 0}
-        
         total_empathy = 0.0
         total_tone = 0.0
         total_grammar = 0.0
-        count_scores = len(analyses)
+        n = len(analyses)
+
+        # Sentiment per day for the last 7 days (real buckets, 0 when no data)
+        today = datetime.utcnow().date()
+        day_buckets: "OrderedDict[str, Dict[str, int]]" = OrderedDict()
+        for i in range(6, -1, -1):
+            day_buckets[(today - timedelta(days=i)).strftime("%Y-%m-%d")] = {
+                "Positive": 0, "Neutral": 0, "Negative": 0,
+            }
 
         for a in analyses:
             intent_counts[a.intent] = intent_counts.get(a.intent, 0) + 1
@@ -42,47 +46,46 @@ class AnalyticsEngine:
                 sentiment_counts[a.sentiment] += 1
             if a.escalation_risk in escalation_counts:
                 escalation_counts[a.escalation_risk] += 1
-            
+
             total_empathy += a.empathy_score
             total_tone += a.tone_score
             total_grammar += a.grammar_score
 
-        avg_empathy = round(total_empathy / count_scores, 1) if count_scores else 89.5
-        avg_tone = round(total_tone / count_scores, 1) if count_scores else 92.4
-        avg_grammar = round(total_grammar / count_scores, 1) if count_scores else 95.1
+            day = a.created_at.date().strftime("%Y-%m-%d") if a.created_at else None
+            if day and day in day_buckets and a.sentiment in day_buckets[day]:
+                day_buckets[day][a.sentiment] += 1
 
-        intent_breakdown = [{"name": k, "value": v} for k, v in (intent_counts.items() if intent_counts else [("Billing & Refund", 12), ("Technical Issue", 18), ("Account & Auth", 8), ("General Inquiry", 5)])]
-        
-        sentiment_trend = [
-            {"date": "Mon", "positive": 45, "neutral": 35, "negative": 20},
-            {"date": "Tue", "positive": 50, "neutral": 30, "negative": 20},
-            {"date": "Wed", "positive": 60, "neutral": 25, "negative": 15},
-            {"date": "Thu", "positive": 55, "neutral": 30, "negative": 15},
-            {"date": "Fri", "positive": 65, "neutral": 25, "negative": 10},
-            {"date": "Sat", "positive": 70, "neutral": 20, "negative": 10},
-            {"date": "Sun", "positive": 75, "neutral": 20, "negative": 5},
-        ]
-
-        escalation_trends = [
-            {"name": "Low Risk", "count": escalation_counts["Low"] if count_scores else 42},
-            {"name": "Medium Risk", "count": escalation_counts["Medium"] if count_scores else 15},
-            {"name": "High Risk", "count": escalation_counts["High"] if count_scores else 6},
-            {"name": "Critical Risk", "count": escalation_counts["Critical"] if count_scores else 2},
-        ]
+        sentiment_trend = []
+        for day, counts in day_buckets.items():
+            total = sum(counts.values())
+            sentiment_trend.append({
+                "date": datetime.strptime(day, "%Y-%m-%d").strftime("%a"),
+                "positive": round(counts["Positive"] / total * 100, 1) if total else 0,
+                "neutral": round(counts["Neutral"] / total * 100, 1) if total else 0,
+                "negative": round(counts["Negative"] / total * 100, 1) if total else 0,
+            })
 
         return {
-            "total_sessions": max(total_sessions, 14),
-            "total_messages": max(total_messages, 86),
-            "total_documents": max(total_documents, 8),
-            "avg_empathy_score": avg_empathy,
-            "avg_tone_score": avg_tone,
-            "avg_grammar_score": avg_grammar,
-            "intent_breakdown": intent_breakdown,
+            "total_sessions": total_sessions,
+            "total_messages": total_messages,
+            "total_documents": total_documents,
+            "avg_empathy_score": round(total_empathy / n, 1) if n else 0,
+            "avg_tone_score": round(total_tone / n, 1) if n else 0,
+            "avg_grammar_score": round(total_grammar / n, 1) if n else 0,
+            "intent_breakdown": [
+                {"name": k, "value": v}
+                for k, v in sorted(intent_counts.items(), key=lambda x: -x[1])
+            ],
             "sentiment_trend": sentiment_trend,
-            "escalation_trends": escalation_trends,
+            "escalation_trends": [
+                {"name": "Low Risk", "count": escalation_counts["Low"]},
+                {"name": "Medium Risk", "count": escalation_counts["Medium"]},
+                {"name": "High Risk", "count": escalation_counts["High"]},
+                {"name": "Critical Risk", "count": escalation_counts["Critical"]},
+            ],
             "sentiment_distribution": [
-                {"name": "Positive", "value": sentiment_counts["Positive"] if count_scores else 55},
-                {"name": "Neutral", "value": sentiment_counts["Neutral"] if count_scores else 28},
-                {"name": "Negative", "value": sentiment_counts["Negative"] if count_scores else 17},
-            ]
+                {"name": "Positive", "value": sentiment_counts["Positive"]},
+                {"name": "Neutral", "value": sentiment_counts["Neutral"]},
+                {"name": "Negative", "value": sentiment_counts["Negative"]},
+            ],
         }

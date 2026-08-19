@@ -5,6 +5,7 @@ import { api } from '../services/api';
 export const SettingsPage: React.FC = () => {
   const [openaiKey, setOpenaiKey] = useState('');
   const [geminiKey, setGeminiKey] = useState('');
+  const [groqKey, setGroqKey] = useState('');
   const [embeddingModel, setEmbeddingModel] = useState('sentence-transformers/all-MiniLM-L6-v2');
   const [chunkSize, setChunkSize] = useState(800);
   const [chunkOverlap, setChunkOverlap] = useState(150);
@@ -21,6 +22,7 @@ export const SettingsPage: React.FC = () => {
       const res = await api.get('/settings');
       setOpenaiKey(res.data.openai_api_key || '');
       setGeminiKey(res.data.gemini_api_key || '');
+      setGroqKey(res.data.groq_api_key || '');
       setEmbeddingModel(res.data.embedding_model || 'sentence-transformers/all-MiniLM-L6-v2');
       setChunkSize(res.data.chunk_size || 800);
       setChunkOverlap(res.data.chunk_overlap || 150);
@@ -37,6 +39,7 @@ export const SettingsPage: React.FC = () => {
       await api.post('/settings', {
         openai_api_key: openaiKey,
         gemini_api_key: geminiKey,
+        groq_api_key: groqKey,
         embedding_model: embeddingModel,
         chunk_size: chunkSize,
         chunk_overlap: chunkOverlap,
@@ -90,6 +93,16 @@ export const SettingsPage: React.FC = () => {
                 className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
               />
             </div>
+            <div>
+              <label className="block text-slate-400 mb-1 font-medium">Groq API Key</label>
+              <input
+                type="password"
+                value={groqKey}
+                onChange={(e) => setGroqKey(e.target.value)}
+                placeholder="gsk_..."
+                className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -103,6 +116,10 @@ export const SettingsPage: React.FC = () => {
                 <option value="gpt-4o">GPT-4o / GPT-4.1 Compatible</option>
                 <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                 <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                <option value="llama-3.3-70b-versatile">Groq: Llama 3.3 70B Versatile</option>
+                <option value="llama-3.1-8b-instant">Groq: Llama 3.1 8B Instant</option>
+                <option value="llama3-70b-8192">Groq: Llama 3 70B</option>
                 <option value="local-fallback">Offline Fallback Engine (Zero API Key)</option>
               </select>
             </div>

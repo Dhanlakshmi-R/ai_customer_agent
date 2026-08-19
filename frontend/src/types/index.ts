@@ -33,6 +33,8 @@ export interface KnowledgeCitation {
 }
 
 export interface CoachingAnalysis {
+  id?: string;
+  message_id?: string;
   intent: string;
   sentiment: string;
   emotion: string;

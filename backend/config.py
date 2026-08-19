@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     # AI / LLM Configuration
     OPENAI_API_KEY: Optional[str] = None
     GEMINI_API_KEY: Optional[str] = None
+    GROQ_API_KEY: Optional[str] = None
+    GROQ_MODEL: str = "openai/gpt-oss-120b"
     LLM_MODEL: str = "gpt-4o"
     TEMPERATURE: float = 0.7
     

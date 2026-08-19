@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc, delete
 from sqlalchemy.orm import selectinload
 
-from backend.database.models import User, Session, Message, Document, CoachingAnalysis, Report, SystemSetting
+from backend.database.models import User, Session, Message, Document, CoachingAnalysis, CoachingFeedback, Report, SystemSetting
 from backend.authentication.passlib_utils import get_password_hash
 
 class Repository:
@@ -95,6 +95,15 @@ class Repository:
         return result.rowcount > 0
 
     # Message & Analysis operations
+    async def get_session_messages(self, session_id: str) -> List[Message]:
+        """Fetches the freshest message list for a session straight from the DB."""
+        result = await self.db.execute(
+            select(Message)
+            .where(Message.session_id == session_id)
+            .order_by(Message.turn_index)
+        )
+        return list(result.scalars().all())
+
     async def add_message(self, session_id: str, sender: str, content: str, turn_index: int) -> Message:
         msg_id = str(uuid.uuid4())
         msg = Message(
@@ -149,6 +158,96 @@ class Repository:
         await self.db.commit()
         await self.db.refresh(analysis)
         return analysis
+
+    async def update_coaching_analysis(self, analysis_id: str, **fields) -> Optional[CoachingAnalysis]:
+        """Refines an existing analysis record in place (used by the instant-then-LLM refine path)."""
+        analysis = await self.db.get(CoachingAnalysis, analysis_id)
+        if not analysis:
+            return None
+        for key, value in fields.items():
+            if hasattr(analysis, key):
+                setattr(analysis, key, value)
+        await self.db.commit()
+        await self.db.refresh(analysis)
+        return analysis
+
+    # Feedback operations
+    async def add_coaching_feedback(self, analysis_id: str, user_id: Optional[str], rating: str) -> CoachingFeedback:
+        """Upserts a single helpful/not-helpful vote per analysis (per user)."""
+        result = await self.db.execute(
+            select(CoachingFeedback).where(
+                CoachingFeedback.analysis_id == analysis_id,
+                CoachingFeedback.user_id == user_id
+            )
+        )
+        existing = result.scalars().first()
+        if existing:
+            existing.rating = rating
+            feedback = existing
+        else:
+            feedback = CoachingFeedback(
+                id=str(uuid.uuid4()),
+                analysis_id=analysis_id,
+                user_id=user_id,
+                rating=rating
+            )
+            self.db.add(feedback)
+        await self.db.commit()
+        await self.db.refresh(feedback)
+        return feedback
+
+    async def get_coaching_feedback_context(self) -> str:
+        """Builds a short LLM directive from aggregate agent feedback so future
+        coaching suggestions are weighted toward what agents found helpful."""
+        result = await self.db.execute(
+            select(
+                CoachingFeedback.rating,
+                CoachingAnalysis.intent,
+                func.count(CoachingFeedback.id)
+            )
+            .join(CoachingAnalysis, CoachingAnalysis.id == CoachingFeedback.analysis_id)
+            .group_by(CoachingFeedback.rating, CoachingAnalysis.intent)
+        )
+        rows = result.all()
+        if not rows:
+            return ""
+        by_intent: dict = {}
+        total_helpful = 0
+        total_votes = 0
+        for rating, intent, count in rows:
+            by_intent.setdefault(intent, {"helpful": 0, "not_helpful": 0})
+            by_intent[intent][rating] += count
+            total_votes += count
+            if rating == "helpful":
+                total_helpful += count
+        acceptance = round(100.0 * total_helpful / total_votes)
+
+        rank = sorted(
+            by_intent.items(),
+            key=lambda kv: kv[1]["helpful"] - kv[1]["not_helpful"],
+            reverse=True
+        )
+        best, worst = rank[0][0], rank[-1][0]
+        best_helpful = rank[0][1]["helpful"]
+        best_total = rank[0][1]["helpful"] + rank[0][1]["not_helpful"]
+        best_rate = round(100.0 * best_helpful / best_total)
+        worst_helpful = rank[-1][1]["helpful"]
+        worst_total = rank[-1][1]["helpful"] + rank[-1][1]["not_helpful"]
+        worst_rate = round(100.0 * worst_helpful / worst_total)
+
+        guidance = [
+            f"Agent feedback loop: {total_votes} ratings recorded, {acceptance}% accepted as helpful.",
+            f"Suggestions for '{best}' were accepted most often ({best_rate}% helpful).",
+        ]
+        if len(rank) > 1 and worst_rate < best_rate:
+            guidance.append(
+                f"Suggestions for '{worst}' were rejected most often ({worst_rate}% helpful) — "
+                "be more cautious and specific there."
+            )
+        guidance.append(
+            "Tune your reasoning and suggested reply toward the styles agents accepted."
+        )
+        return " ".join(guidance)
 
     # Document operations
     async def add_document(

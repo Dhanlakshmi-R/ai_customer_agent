@@ -13,12 +13,14 @@ import {
 import { api } from '../services/api';
 import { Session } from '../types';
 import { useStore } from '../store/useStore';
+import { TranscriptPicker, TranscriptDetail } from '../components/TranscriptPicker';
 
 export const SessionsPage: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [showModal, setShowModal] = useState(false);
   const { setActiveSession } = useStore();
   const navigate = useNavigate();
+  const [selectedTranscript, setSelectedTranscript] = useState<TranscriptDetail | null>(null);
 
   // Form State
   const [mode, setMode] = useState<'simulator' | 'manual' | 'replay'>('simulator');
@@ -27,7 +29,6 @@ export const SessionsPage: React.FC = () => {
   const [scenario, setScenario] = useState('Unrecognized Charge & Refund Request');
   const [persona, setPersona] = useState('Angry');
   const [difficulty, setDifficulty] = useState('medium');
-  const [conversationLength, setConversationLength] = useState(10);
 
   useEffect(() => {
     fetchSessions();
@@ -45,18 +46,36 @@ export const SessionsPage: React.FC = () => {
   const handleCreateSession = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (mode === 'replay') {
+        if (!selectedTranscript) return;
+        const res = await api.post('/session/create', {
+          mode,
+          product,
+          category,
+          scenario,
+          persona,
+          difficulty
+        });
+        setActiveSession(res.data);
+        setShowModal(false);
+        navigate(`/console?mode=replay&transcript=${encodeURIComponent(selectedTranscript.id)}`);
+        return;
+      }
+      const scenarioToUse =
+        mode === 'simulator' && selectedTranscript
+          ? selectedTranscript.scenario_suggestion || selectedTranscript.title
+          : scenario;
       const res = await api.post('/session/create', {
         mode,
         product,
         category,
-        scenario,
+        scenario: scenarioToUse,
         persona,
-        difficulty,
-        conversation_length: conversationLength
+        difficulty
       });
       setActiveSession(res.data);
       setShowModal(false);
-      navigate('/console');
+      navigate(`/console?mode=${mode}`);
     } catch (err) {
       console.error('Failed to create session:', err);
     }
@@ -147,15 +166,44 @@ export const SessionsPage: React.FC = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-slate-400 mb-1 font-medium">Scenario Description</label>
-                <input
-                  type="text"
-                  value={scenario}
-                  onChange={(e) => setScenario(e.target.value)}
-                  className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
-                />
-              </div>
+              {mode === 'replay' ? (
+                <div>
+                  <label className="block text-slate-400 mb-1 font-medium">Transcript for Replay *</label>
+                  <TranscriptPicker
+                    required
+                    value={selectedTranscript?.id || null}
+                    onChange={setSelectedTranscript}
+                  />
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-slate-400 mb-1 font-medium">Scenario Description</label>
+                    <input
+                      type="text"
+                      value={scenario}
+                      onChange={(e) => setScenario(e.target.value)}
+                      className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  {mode === 'simulator' && (
+                    <div>
+                      <label className="block text-slate-400 mb-1 font-medium">Optional — Seed from transcript</label>
+                      <TranscriptPicker
+                        value={selectedTranscript?.id || null}
+                        onChange={(t) => {
+                          setSelectedTranscript(t);
+                          if (t) setScenario(t.scenario_suggestion || t.title);
+                        }}
+                        placeholder="Select a transcript to prefill the scenario..."
+                      />
+                      <p className="text-[10px] text-slate-500 mt-1">
+                        Transcripts carry no persona/product metadata, so only the scenario field is pre-filled.
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>

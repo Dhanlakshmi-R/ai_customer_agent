@@ -15,7 +15,6 @@ class RegisterSchema(BaseModel):
     email: str
     password: str
     full_name: str
-    role: str = "agent" # admin, trainer, agent
 
 class LoginSchema(BaseModel):
     email: str
@@ -34,7 +33,7 @@ async def register(data: RegisterSchema, db: AsyncSession = Depends(get_db)):
         email=data.email,
         password=data.password,
         full_name=data.full_name,
-        role=data.role
+        role="agent"
     )
     token = create_access_token({"sub": user.id, "email": user.email, "role": user.role})
     return {

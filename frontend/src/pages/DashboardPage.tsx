@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, LineChart, Line, CartesianGrid 
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, CartesianGrid
 } from 'recharts';
-import { 
-  TrendingUp, 
-  ShieldAlert, 
-  MessageSquare, 
-  BookOpen, 
-  Award, 
-  HeartHandshake, 
-  Zap,
-  ArrowUpRight
+import {
+  ShieldAlert,
+  MessageSquare,
+  BookOpen,
+  Award,
+  HeartHandshake,
+  Zap
 } from 'lucide-react';
 import { api } from '../services/api';
 import { AnalyticsSummary } from '../types';
@@ -59,10 +57,8 @@ export const DashboardPage: React.FC = () => {
             <span>Total Sessions</span>
             <MessageSquare className="w-4 h-4 text-indigo-400" />
           </div>
-          <p className="text-2xl font-extrabold text-slate-100">{data?.total_sessions || 14}</p>
-          <span className="text-[10px] text-emerald-400 flex items-center gap-0.5">
-            <ArrowUpRight className="w-3 h-3" /> +12% from last week
-          </span>
+          <p className="text-2xl font-extrabold text-slate-100">{data ? data.total_sessions : '—'}</p>
+          <span className="text-[10px] text-slate-500">across all sessions</span>
         </div>
 
         <div className="p-5 rounded-2xl glass-card space-y-2">
@@ -70,8 +66,8 @@ export const DashboardPage: React.FC = () => {
             <span>Avg Empathy Score</span>
             <HeartHandshake className="w-4 h-4 text-purple-400" />
           </div>
-          <p className="text-2xl font-extrabold text-slate-100">{data?.avg_empathy_score || 89.5}%</p>
-          <span className="text-[10px] text-purple-400">High empathy baseline</span>
+          <p className="text-2xl font-extrabold text-slate-100">{data ? `${data.avg_empathy_score}%` : '—'}</p>
+          <span className="text-[10px] text-slate-500">across all analyzed turns</span>
         </div>
 
         <div className="p-5 rounded-2xl glass-card space-y-2">
@@ -79,8 +75,8 @@ export const DashboardPage: React.FC = () => {
             <span>Avg Tone & Grammar</span>
             <Award className="w-4 h-4 text-emerald-400" />
           </div>
-          <p className="text-2xl font-extrabold text-slate-100">{data?.avg_tone_score || 92.4}%</p>
-          <span className="text-[10px] text-emerald-400">Professional compliance</span>
+          <p className="text-2xl font-extrabold text-slate-100">{data ? `${data.avg_tone_score}% / ${data.avg_grammar_score}%` : '—'}</p>
+          <span className="text-[10px] text-slate-500">across all analyzed turns</span>
         </div>
 
         <div className="p-5 rounded-2xl glass-card space-y-2">
@@ -88,34 +84,13 @@ export const DashboardPage: React.FC = () => {
             <span>RAG Knowledge Index</span>
             <BookOpen className="w-4 h-4 text-amber-400" />
           </div>
-          <p className="text-2xl font-extrabold text-slate-100">{data?.total_documents || 8} Docs</p>
-          <span className="text-[10px] text-amber-400">Indexed in ChromaDB</span>
+          <p className="text-2xl font-extrabold text-slate-100">{data ? `${data.total_documents} Docs` : '—'}</p>
+          <span className="text-[10px] text-slate-500">indexed in ChromaDB</span>
         </div>
       </div>
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        {/* Sentiment Journey Line Chart */}
-        <div className="p-5 md:p-6 rounded-2xl glass-card space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-200">Customer Sentiment Trend (Weekly)</h2>
-            <TrendingUp className="w-4 h-4 text-indigo-400" />
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data?.sentiment_trend || []}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey="date" stroke="#64748b" fontSize={11} />
-                <YAxis stroke="#64748b" fontSize={11} />
-                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px' }} />
-                <Line type="monotone" dataKey="positive" stroke="#10b981" strokeWidth={2} name="Positive %" />
-                <Line type="monotone" dataKey="neutral" stroke="#6366f1" strokeWidth={2} name="Neutral %" />
-                <Line type="monotone" dataKey="negative" stroke="#ef4444" strokeWidth={2} name="Negative %" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
 
         {/* Escalation Risk Frequency Bar Chart */}
         <div className="p-5 md:p-6 rounded-2xl glass-card space-y-4">

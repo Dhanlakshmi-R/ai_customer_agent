@@ -55,7 +55,7 @@ async def list_sessions(
     current_user: User = Depends(get_current_user)
 ):
     repo = Repository(db)
-    sessions = await repo.list_sessions(user_id=current_user.id if current_user.role == "agent" else None)
+    sessions = await repo.list_sessions(user_id=current_user.id)
     return [
         {
             "id": s.id,
@@ -81,7 +81,9 @@ async def get_session_details(
     session = await repo.get_session(session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found.")
-    
+    if session.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Session not found.")
+
     messages = []
     for msg in session.messages:
         analysis_data = None
@@ -131,6 +133,12 @@ async def delete_session(
     current_user: User = Depends(get_current_user)
 ):
     repo = Repository(db)
+    session = await repo.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found.")
+    if session.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Session not found.")
+
     success = await repo.delete_session(session_id)
     if not success:
         raise HTTPException(status_code=404, detail="Session not found.")

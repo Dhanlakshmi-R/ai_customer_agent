@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  MessageSquareCode, Mic2, History, Bot,
+  MessageSquareCode,
   BookOpen, 
   BarChart3, 
   FileText, 
@@ -26,9 +26,6 @@ export const Sidebar: React.FC = () => {
   const navItems = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { label: 'Live Coaching', path: '/console', icon: MessageSquareCode },
-    { label: 'Simulator Mode', path: '/console?mode=simulator', icon: Bot },
-    { label: 'Manual Mode', path: '/console?mode=manual', icon: Mic2 },
-    { label: 'Replay Mode', path: '/console?mode=replay', icon: History },
     { label: 'Sessions', path: '/sessions', icon: FileText },
     { label: 'Knowledge Base', path: '/knowledge', icon: BookOpen },
     { label: 'Analytics', path: '/analytics', icon: BarChart3 },
