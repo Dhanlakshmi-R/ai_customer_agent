@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: novadesk-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}
+    autoDeploy: true
+    envVars:
+      - key: PROJECT_NAME
+        value: "NovaDesk AI: AI-Powered Customer Support Assistant with Live Response Guidance"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        value: "gpt-4o"
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
