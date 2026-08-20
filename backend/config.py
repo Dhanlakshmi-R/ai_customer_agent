@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 from typing import Optional
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "AI Customer Support Coaching Assistant"
+    PROJECT_NAME: str = "NovaDesk AI: AI-Powered Customer Support Assistant with Live Response Guidance"
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = "SUPER_SECRET_JWT_KEY_FOR_COACHING_ASSISTANT_2026_PRODUCTION"
     ALGORITHM: str = "HS256"

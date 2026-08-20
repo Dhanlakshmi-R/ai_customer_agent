@@ -18,21 +18,23 @@ export const Header: React.FC = () => {
           <PanelLeft className="w-4 h-4" />
         </button>
         <div className="relative w-44 sm:w-72 md:w-80">
-        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-        <input
-          type="text"
-          placeholder="Search knowledge, sessions, tickets..."
-          className="w-full bg-slate-950/60 text-slate-200 pl-9 pr-12 py-2 rounded-xl border border-slate-800 text-xs focus:outline-none focus:border-indigo-400 transition shadow-inner shadow-black/5"
-        />
-        <span className="desktop-only absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-500 border border-slate-700 px-1.5 py-0.5 rounded-md flex items-center gap-1"><Command className="w-2.5 h-2.5" />K</span>
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search knowledge, sessions, tickets..."
+            className="w-full bg-slate-950/60 text-slate-200 pl-9 pr-12 py-2 rounded-xl border border-slate-800 text-xs focus:outline-none focus:border-indigo-400 transition shadow-inner shadow-black/5"
+          />
+          <span className="desktop-only absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-500 border border-slate-700 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+            <Command className="w-2.5 h-2.5" />K
+          </span>
         </div>
       </div>
 
       {/* Action Controls */}
       <div className="flex items-center gap-3">
         {/* Real-time Status Pill */}
-          <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/50 border border-emerald-800/40 text-emerald-400 text-xs font-medium">
-          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-950/50 border border-emerald-800/40 text-emerald-400 text-xs font-medium">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span>Orchestrator Active</span>
         </div>
 
@@ -52,7 +54,7 @@ export const Header: React.FC = () => {
             className="p-2 rounded-lg bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white transition border border-slate-700/50 relative"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500"></span>
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
           </button>
 
           {showNotifications && (

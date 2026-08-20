@@ -5,9 +5,9 @@ import {
   Trash2, 
   Search, 
   BookOpen, 
-  CheckCircle, 
-  Sparkles,
-  Layers
+  Layers,
+  Database,
+  ScanSearch
 } from 'lucide-react';
 import { api } from '../services/api';
 import { DocumentItem } from '../types';
@@ -82,29 +82,32 @@ export const KnowledgeBasePage: React.FC = () => {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-slate-950 text-slate-100 min-h-screen">
+    <div className="ui-page p-5 md:p-8 space-y-7 min-h-screen">
       {/* Top Title */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-100">RAG Support Knowledge Base</h1>
-        <p className="text-xs text-slate-400 mt-1">Upload FAQs, policies, and product documentation to power real-time coaching recommendations.</p>
+        <p className="ui-eyebrow text-[11px] uppercase tracking-[.16em] font-semibold flex items-center gap-1.5">
+          <Database className="w-3 h-3" /> Retrieval pipeline
+        </p>
+        <h1 className="ui-header-title page-heading text-2xl md:text-3xl font-bold mt-1">RAG Support Knowledge Base</h1>
+        <p className="ui-subtext text-xs mt-2">Upload FAQs, policies, and product documentation to power real-time coaching recommendations.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
         {/* Upload Form (5 Columns) */}
-        <div className="lg:col-span-5 p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-            <Upload className="w-5 h-5 text-indigo-400" />
-            <h2 className="text-sm font-bold text-slate-200">Upload New Knowledge Document</h2>
+        <div className="lg:col-span-5 ui-card p-6 rounded-2xl space-y-4">
+          <div className="flex items-center gap-2 border-b border-[var(--border-subtle)] pb-3">
+            <span className="ui-icon-tile"><Upload className="w-4 h-4" /></span>
+            <h2 className="ui-header-title text-sm font-bold">Upload New Knowledge Document</h2>
           </div>
 
           <form onSubmit={handleFileUpload} className="space-y-4 text-xs">
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">Select Category</label>
+              <label className="ui-label">Select Category</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
+                className="ui-select"
               >
                 <option value="Billing">Billing & Refund Policies</option>
                 <option value="Technical">Technical & API Troubleshooting</option>
@@ -114,28 +117,28 @@ export const KnowledgeBasePage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">File (PDF, DOCX, TXT, MD)</label>
+              <label className="ui-label">File (PDF, DOCX, TXT, MD)</label>
               <input
                 type="file"
                 accept=".pdf,.docx,.txt,.md"
                 onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                className="w-full bg-slate-950 text-slate-400 p-2 rounded-xl border border-slate-800 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+                className="ui-input ui-card-flat file:cursor-pointer file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[var(--brand)] file:text-white hover:file:brightness-110"
               />
             </div>
 
             <button
               type="submit"
               disabled={!selectedFile || uploading}
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold flex items-center justify-center gap-2 transition disabled:opacity-50 shadow-lg shadow-indigo-600/20"
+              className="ui-btn ui-btn-primary w-full py-2.5"
             >
               <Upload className="w-4 h-4" /> {uploading ? 'Processing & Vectorizing...' : 'Upload & Chunk Document'}
             </button>
           </form>
 
           {/* RAG Engine Info Pill */}
-          <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 space-y-1">
-            <p className="font-semibold text-slate-300 flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-indigo-400" /> Automated Pipeline Specification:
+          <div className="p-3.5 rounded-xl ui-card-raised border-[var(--border-subtle)] text-[11px] ui-subtext space-y-1.5">
+            <p className="ui-table-cell font-semibold flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 ui-eyebrow" /> Automated Pipeline Specification:
             </p>
             <p>• Splitter: RecursiveCharacterTextSplitter (Chunk Size: 800, Overlap: 150)</p>
             <p>• Embedding: sentence-transformers/all-MiniLM-L6-v2</p>
@@ -147,9 +150,10 @@ export const KnowledgeBasePage: React.FC = () => {
         <div className="lg:col-span-7 space-y-6">
 
           {/* RAG Search Sandbox */}
-          <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-            <h2 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-indigo-400" /> Vector Search Testing Sandbox
+          <div className="ui-card p-5 rounded-2xl space-y-3">
+            <h2 className="ui-header-title text-sm font-bold flex items-center gap-2">
+              <span className="ui-icon-tile"><ScanSearch className="w-4 h-4" /></span>
+              Vector Search Testing Sandbox
             </h2>
             <form onSubmit={handleSearchSandbox} className="flex gap-2">
               <input
@@ -157,12 +161,12 @@ export const KnowledgeBasePage: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Test query (e.g. 'refund double charge policy')..."
-                className="flex-1 bg-slate-950 text-slate-200 px-3.5 py-2 rounded-xl border border-slate-800 text-xs focus:outline-none focus:border-indigo-500"
+                className="ui-input flex-1"
               />
               <button
                 type="submit"
                 disabled={searching}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition"
+                className="ui-btn ui-btn-primary px-4 py-2"
               >
                 <Search className="w-3.5 h-3.5" /> Search
               </button>
@@ -171,12 +175,12 @@ export const KnowledgeBasePage: React.FC = () => {
             {searchResults.length > 0 && (
               <div className="space-y-2 pt-2">
                 {searchResults.map((res, idx) => (
-                  <div key={idx} className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-1">
-                    <div className="flex justify-between font-semibold text-slate-200">
-                      <span>{res.title}</span>
-                      <span className="text-emerald-400">{Math.round((res.confidence || 0.9) * 100)}% Match</span>
+                  <div key={idx} className="p-3 rounded-xl ui-card-raised border-[var(--border-subtle)] text-xs space-y-1">
+                    <div className="flex justify-between gap-3 font-semibold ui-header-title">
+                      <span className="truncate">{res.title}</span>
+                      <span className="text-[var(--success)] shrink-0">{Math.round((res.confidence || 0.9) * 100)}% Match</span>
                     </div>
-                    <p className="text-[11px] text-slate-400">{res.snippet}</p>
+                    <p className="ui-subtext text-[11px]">{res.snippet}</p>
                   </div>
                 ))}
               </div>
@@ -184,15 +188,15 @@ export const KnowledgeBasePage: React.FC = () => {
           </div>
 
           {/* Ingested Document Table */}
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-            <h2 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-indigo-400" /> Ingested Knowledge Base Articles ({documents.length})
+          <div className="ui-card p-4 md:p-6 rounded-2xl space-y-4">
+            <h2 className="ui-header-title text-sm font-bold flex items-center gap-2">
+              <BookOpen className="w-4 h-4 ui-eyebrow" /> Ingested Knowledge Base Articles ({documents.length})
             </h2>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+              <table className="ui-table w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
+                  <tr className="ui-table-head border-b border-[var(--border-subtle)] uppercase text-[10px] tracking-wider">
                     <th className="py-2.5 px-3">Document Title</th>
                     <th className="py-2.5 px-3">Category</th>
                     <th className="py-2.5 px-3">Chunks</th>
@@ -200,28 +204,29 @@ export const KnowledgeBasePage: React.FC = () => {
                     <th className="py-2.5 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-[var(--border-subtle)]">
                   {documents.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-6 text-center text-slate-500">
+                      <td colSpan={5} className="py-6 text-center ui-subtext">
                         No documents ingested yet. Upload your first knowledge article above.
                       </td>
                     </tr>
                   ) : (
                     documents.map((doc) => (
-                      <tr key={doc.id} className="hover:bg-slate-800/40 transition">
-                        <td className="py-3 px-3 font-semibold text-slate-200">{doc.title}</td>
-                        <td className="py-3 px-3">
-                          <span className="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-indigo-300">
-                            {doc.category}
-                          </span>
+                      <tr key={doc.id} className="ui-table-row transition">
+                        <td className="py-3 px-3 font-semibold ui-header-title flex items-center gap-2">
+                          <FileText className="w-4 h-4 ui-subtext shrink-0" />
+                          <span className="truncate">{doc.title}</span>
                         </td>
-                        <td className="py-3 px-3 font-mono text-slate-400">{doc.chunk_count} chunks</td>
-                        <td className="py-3 px-3 font-mono text-slate-400 uppercase">{doc.file_type}</td>
+                        <td className="py-3 px-3">
+                          <span className="ui-chip ui-chip-indigo">{doc.category}</span>
+                        </td>
+                        <td className="py-3 px-3 font-mono ui-subtext">{doc.chunk_count} chunks</td>
+                        <td className="py-3 px-3 font-mono ui-subtext uppercase">{doc.file_type}</td>
                         <td className="py-3 px-3 text-right">
                           <button
                             onClick={() => handleDeleteDoc(doc.id)}
-                            className="p-1.5 rounded bg-rose-950/40 text-rose-400 hover:bg-rose-900/60 transition"
+                            className="ui-chip ui-chip-rose p-2 rounded-lg transition hover:brightness-110"
                             title="Delete Document"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

@@ -57,7 +57,7 @@ def generate_pdf_report(
     elements = []
 
     # Title & Header
-    elements.append(Paragraph("AI Customer Support Coaching Report", title_style))
+    elements.append(Paragraph("NovaDesk AI — Customer Support Performance Report", title_style))
     elements.append(Paragraph(f"Session ID: {session_id} | Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}", body_style))
     elements.append(Spacer(1, 10))
     elements.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#6366f1"), spaceAfter=15))

@@ -4,15 +4,11 @@ import {
   MessageSquare, 
   Send, 
   Sparkles, 
-  AlertTriangle, 
   CheckCircle2, 
   BookOpen, 
   Bot, 
-  User as UserIcon, 
   Play, 
-  Flame, 
   Copy, 
-  HelpCircle,
   ShieldAlert,
   Zap,
   Wifi,
@@ -61,8 +57,7 @@ export const MainConsolePage: React.FC = () => {
   const [mode, setMode] = useState<'simulator' | 'manual' | 'replay'>(initialMode);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [inputText, setInputText] = useState('');
-  const [agentDraft, setAgentDraft] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+  const [isTyping] = useState(false);
   const [loadingTurn, setLoadingTurn] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -145,6 +140,7 @@ export const MainConsolePage: React.FC = () => {
       setReplayTurnIndex(0);
       setIsReplaying(false);
       setReplayError(null);
+      setSimSeedTranscript(null);
       // Trigger initial customer turn via socket once connected (fallback to REST)
       if (selectedMode === 'simulator') {
         const sessionId = res.data.id;
@@ -521,22 +517,22 @@ export const MainConsolePage: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 text-slate-100 animate-enter">
+    <div className="flex-1 flex flex-col h-[calc(100vh-4rem)] overflow-hidden ui-page animate-enter">
       <KnowledgeModal />
 
       {/* Top Console Mode Bar */}
-      <div className="min-h-14 border-b border-slate-800 bg-slate-900/80 px-4 md:px-6 py-2 flex items-center justify-between text-xs gap-4 overflow-x-auto">
+      <div className="min-h-14 ui-panel-solid border-b border-[var(--border-subtle)] px-4 md:px-6 py-2 flex items-center justify-between text-xs gap-4 overflow-x-auto">
         <div className="flex items-center gap-3">
-          <span className="font-semibold text-slate-300">Interaction Mode:</span>
-          <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
+          <span className="font-semibold text-[var(--text-secondary)]">Interaction Mode:</span>
+          <div className="flex bg-[var(--surface-2)] p-1 rounded-lg border border-[var(--border-subtle)]">
             {(['simulator', 'manual', 'replay'] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => handleModeChange(m)}
                 className={`px-3 py-1 rounded-md capitalize font-medium transition ${
                   mode === m
-                    ? 'bg-indigo-600 text-white shadow'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-[var(--brand)] text-white shadow'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 {m} Mode
@@ -546,7 +542,7 @@ export const MainConsolePage: React.FC = () => {
 
           {/* Read-Aloud Language Selector */}
           <div className="flex items-center gap-1.5">
-            <Languages className="w-3.5 h-3.5 text-slate-400" />
+            <Languages className="w-3.5 h-3.5 text-[var(--text-muted)]" />
             <select
               value={readerLang}
               onChange={(e) => {
@@ -555,7 +551,7 @@ export const MainConsolePage: React.FC = () => {
                 setReaderLang(e.target.value);
               }}
               title="Choose the language for reading messages aloud"
-              className="bg-slate-950 text-slate-200 border border-slate-800 rounded-lg text-xs p-1.5 focus:outline-none focus:border-indigo-500"
+              className="ui-select !w-auto !py-1.5"
             >
               {READER_LANGUAGES.map((lang) => (
                 <option key={lang.id} value={lang.id}>
@@ -568,30 +564,30 @@ export const MainConsolePage: React.FC = () => {
 
         <div className="flex items-center gap-3">
           {isConnected ? (
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/50">
-              <Wifi className="w-3 h-3 text-emerald-400 animate-pulse" /> Real-time Socket Connected
+            <span className="ui-chip ui-chip-emerald">
+              <Wifi className="w-3 h-3 animate-pulse" /> Real-time Socket Connected
             </span>
           ) : isReconnecting ? (
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-rose-950/80 text-rose-400 border border-rose-800/50 animate-pulse">
-              <WifiOff className="w-3 h-3 text-rose-400" /> Connection Lost — Reconnecting...
+            <span className="ui-chip ui-chip-rose animate-pulse">
+              <WifiOff className="w-3 h-3" /> Connection Lost — Reconnecting...
             </span>
           ) : (
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-950/80 text-amber-400 border border-amber-800/50">
-              <WifiOff className="w-3 h-3 text-amber-400" /> Connecting Socket...
+            <span className="ui-chip ui-chip-amber">
+              <WifiOff className="w-3 h-3" /> Connecting Socket...
             </span>
           )}
 
           {isProcessing && activeStage && (
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-950 text-indigo-300 border border-indigo-700/60 animate-pulse">
-              <Sparkles className="w-3 h-3 text-indigo-400" /> Pipeline Stage: {activeStage}
+            <span className="ui-chip ui-chip-indigo animate-pulse">
+              <Sparkles className="w-3 h-3" /> Pipeline Stage: {activeStage}
             </span>
           )}
 
           {activeSession && (
-            <div className="hidden xl:flex items-center gap-4 text-slate-400 whitespace-nowrap border-l border-slate-800 pl-3">
-              <span>Product: <strong className="text-slate-200">{activeSession.product}</strong></span>
-              <span>Scenario: <strong className="text-slate-200">{activeSession.scenario}</strong></span>
-              <span>Persona: <strong className="text-indigo-400 uppercase">{activeSession.persona}</strong></span>
+            <div className="hidden xl:flex items-center gap-4 text-[var(--text-muted)] whitespace-nowrap border-l border-[var(--border-subtle)] pl-3">
+              <span>Product: <strong className="text-[var(--text-primary)]">{activeSession.product}</strong></span>
+              <span>Scenario: <strong className="text-[var(--text-primary)]">{activeSession.scenario}</strong></span>
+              <span>Persona: <strong className="text-[var(--brand)] uppercase">{activeSession.persona}</strong></span>
             </div>
           )}
         </div>
@@ -601,17 +597,17 @@ export const MainConsolePage: React.FC = () => {
       <div className="flex-1 grid grid-cols-1 xl:grid-cols-12 gap-0 overflow-y-auto xl:overflow-hidden">
 
         {/* LEFT PANEL: Conversation Feed & Controls (4 Columns) */}
-        <div className="xl:col-span-4 xl:border-r border-b xl:border-b-0 border-slate-800 flex flex-col min-h-[34rem] xl:min-h-0 bg-slate-900/30">
-          <div className="p-3.5 border-b border-slate-800 bg-slate-900/60 flex items-center justify-between">
+        <div className="xl:col-span-4 xl:border-r border-b xl:border-b-0 border-[var(--border-subtle)] flex flex-col min-h-[34rem] xl:min-h-0 ui-panel">
+          <div className="p-3.5 ui-panel-solid flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <MessageSquare className="w-4 h-4 text-indigo-400" />
-              <h2 className="font-semibold text-xs text-slate-200">Live Support Feed</h2>
+              <MessageSquare className="w-4 h-4 text-[var(--brand)]" />
+              <h2 className="font-semibold text-xs text-[var(--text-primary)]">Live Support Feed</h2>
             </div>
             {mode === 'simulator' && (
               <button
                 onClick={handleSimulatorNextTurn}
                 disabled={loadingTurn || isProcessing}
-                className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-medium flex items-center gap-1.5 transition disabled:opacity-50"
+                className="ui-btn ui-btn-primary px-2.5 py-1.5"
               >
                 <Play className="w-3 h-3" /> Next Customer Turn
               </button>
@@ -620,8 +616,8 @@ export const MainConsolePage: React.FC = () => {
 
           {/* Replay Mode Transcript Selector */}
           {mode === 'replay' && (
-            <div className="p-3 border-b border-slate-800 bg-slate-950/80 flex flex-col gap-2">
-              <label className="text-[11px] font-semibold text-slate-400">Select Transcript for Replay:</label>
+            <div className="p-3 border-b border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--surface-2)_55%,transparent)] flex flex-col gap-2">
+              <label className="text-[11px] font-semibold text-[var(--text-muted)]">Select Transcript for Replay:</label>
               <div className="flex gap-2">
                 <select
                   value={selectedTranscript?.filename || ''}
@@ -635,7 +631,7 @@ export const MainConsolePage: React.FC = () => {
                       setReplayError(null);
                     }
                   }}
-                  className="flex-1 bg-slate-900 text-slate-200 border border-slate-800 rounded-lg text-xs p-1.5 focus:outline-none focus:border-indigo-500"
+                  className="ui-select flex-1 !py-1.5"
                 >
                   {transcripts.map(t => (
                     <option key={t.filename} value={t.filename}>{t.title}</option>
@@ -644,14 +640,14 @@ export const MainConsolePage: React.FC = () => {
                 <button
                   onClick={handleReplayNextTurn}
                   disabled={isProcessing || isReplaying || !selectedTranscript || replayTurnIndex >= (selectedTranscript?.messages.length || 0)}
-                  className="px-2.5 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1 transition disabled:opacity-50"
+                  className="ui-btn ui-btn-primary px-2.5 py-1.5"
                 >
                   <Play className="w-3.5 h-3.5" /> Next Turn
                 </button>
                 {isReplaying ? (
                   <button
                     onClick={handleStopAutoReplay}
-                    className="px-2.5 py-1.5 rounded bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-1 transition"
+                    className="ui-btn px-2.5 py-1.5 text-white" style={{ backgroundColor: 'var(--danger)' }}
                   >
                     <Square className="w-3.5 h-3.5" /> Stop
                   </button>
@@ -659,14 +655,14 @@ export const MainConsolePage: React.FC = () => {
                   <button
                     onClick={handleStartAutoReplay}
                     disabled={!selectedTranscript}
-                    className="px-2.5 py-1.5 rounded bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-1 transition disabled:opacity-50"
+                    className="ui-btn px-2.5 py-1.5 text-white disabled:opacity-50" style={{ backgroundColor: 'var(--info)' }}
                   >
                     <RotateCcw className="w-3.5 h-3.5" /> Auto
                   </button>
                 )}
               </div>
               {replayError && (
-                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-rose-950/60 border border-rose-800/60 text-[11px] text-rose-300">
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg ui-card-raised text-[11px] text-[var(--danger)]">
                   <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
                   <span>{replayError}</span>
                 </div>
@@ -676,8 +672,8 @@ export const MainConsolePage: React.FC = () => {
 
           {/* Simulator Mode Seed Selector */}
           {mode === 'simulator' && (
-            <div className="p-3 border-b border-slate-800 bg-slate-950/80">
-              <label className="text-[11px] font-semibold text-slate-400 mb-1 block">Optional — Seed scenario from transcript:</label>
+            <div className="p-3 border-b border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--surface-2)_55%,transparent)]">
+              <label className="text-[11px] font-semibold text-[var(--text-muted)] mb-1 block">Optional — Seed scenario from transcript:</label>
               <TranscriptPicker
                 value={simSeedTranscript?.id || null}
                 onChange={handleSimulatorSeed}
@@ -689,8 +685,8 @@ export const MainConsolePage: React.FC = () => {
           {/* Messages Stream */}
           <div className="flex-1 p-4 overflow-y-auto space-y-3">
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 space-y-2">
-                <Bot className="w-10 h-10 text-slate-700 animate-bounce" />
+              <div className="h-full flex flex-col items-center justify-center text-center p-6 text-[var(--text-faint)] space-y-2">
+                <Bot className="w-10 h-10 text-[var(--text-faint)] animate-bounce" />
                 <p className="text-xs">No messages yet. {mode === 'simulator' ? 'Click "Next Customer Turn" to start.' : 'Paste a customer message below.'}</p>
               </div>
             ) : (
@@ -700,18 +696,19 @@ export const MainConsolePage: React.FC = () => {
                   className={`flex gap-3 ${msg.sender === 'agent' ? 'justify-end' : 'justify-start'}`}
                 >
                   {msg.sender === 'customer' && (
-                    <div className="w-7 h-7 rounded-full bg-rose-950 border border-rose-800/50 text-rose-400 flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="w-7 h-7 rounded-full ui-card-raised text-[var(--danger)] flex items-center justify-center font-bold text-xs shrink-0" style={{ background: 'color-mix(in srgb, var(--danger) 18%, transparent)' }}>
                       C
                     </div>
                   )}
                   <div
-                    className={`max-w-[80%] rounded-2xl p-3 text-xs leading-relaxed ${
+                    className={`max-w-[80%] rounded-2xl p-3 text-xs leading-relaxed shadow-md ${
                       msg.sender === 'agent'
-                        ? 'bg-indigo-600 text-white rounded-br-none'
-                        : 'bg-slate-800/90 text-slate-200 border border-slate-700/60 rounded-bl-none'
+                        ? 'text-white rounded-br-none' 
+                        : 'ui-card-raised rounded-bl-none'
                     }`}
+                    style={msg.sender === 'agent' ? { background: 'linear-gradient(135deg, var(--brand), var(--brand-strong))' } : undefined}
                   >
-                    <div className="flex items-center justify-between gap-2 mb-1 border-b border-white/10 pb-1 text-[10px] opacity-75">
+                    <div className="flex items-center justify-between gap-2 mb-1 border-b pb-1 text-[10px] opacity-75" style={{ borderColor: 'var(--border-subtle)' }}>
                       <span className="font-semibold capitalize">{msg.sender}</span>
                       <span className="flex items-center gap-2">
                         <button
@@ -719,9 +716,12 @@ export const MainConsolePage: React.FC = () => {
                           title={speakingMsgId === msg.id ? 'Stop reading' : `Read aloud (${readerLabel(readerLang)})`}
                           className={`flex items-center gap-1 rounded px-1.5 py-0.5 transition ${
                             speakingMsgId === msg.id
-                              ? 'bg-emerald-600 text-white'
-                              : 'bg-slate-700/50 hover:bg-slate-600 text-slate-300'
+                              ? 'text-white' 
+                              : msg.sender === 'agent'
+                              ? 'bg-white/20 hover:bg-white/30 text-white'
+                              : 'ui-card-raised text-[var(--text-secondary)]'
                           }`}
+                          style={speakingMsgId === msg.id ? { backgroundColor: 'var(--success)' } : undefined}
                         >
                           <Volume2 className="w-3 h-3" />
                           {speakingMsgId === msg.id ? 'Stop' : 'Read'}
@@ -731,13 +731,13 @@ export const MainConsolePage: React.FC = () => {
                     </div>
                     <p>{msgText(msg)}</p>
                     {readerLang !== 'en' && (
-                      <div className="mt-1 text-[9px] text-indigo-300/70 italic">
+                      <div className="mt-1 text-[9px] italic" style={{ color: msg.sender === 'agent' ? 'rgba(255,255,255,.7)' : 'var(--brand)' }}>
                         Reading in {readerLabel(readerLang)}
                       </div>
                     )}
                   </div>
                   {msg.sender === 'agent' && (
-                    <div className="w-7 h-7 rounded-full bg-indigo-950 border border-indigo-800/50 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0" style={{ background: 'color-mix(in srgb, var(--brand) 18%, transparent)', color: 'var(--brand)', border: '1px solid color-mix(in srgb, var(--brand) 30%, transparent)' }}>
                       A
                     </div>
                   )}
@@ -746,11 +746,11 @@ export const MainConsolePage: React.FC = () => {
             )}
 
             {isTyping && (
-              <div className="flex items-center gap-2 text-slate-400 text-xs italic pl-2">
+              <div className="flex items-center gap-2 text-[var(--text-muted)] text-xs italic pl-2">
                 <div className="flex gap-1">
-                  <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></span>
-                  <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                  <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                  <span className="w-1.5 h-1.5 bg-[var(--brand)] rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-[var(--brand)] rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-1.5 h-1.5 bg-[var(--brand)] rounded-full animate-bounce [animation-delay:0.4s]"></span>
                 </div>
                 <span>Customer is typing...</span>
               </div>
@@ -759,7 +759,7 @@ export const MainConsolePage: React.FC = () => {
           </div>
 
           {/* Input Panel */}
-          <div className="p-3 border-t border-slate-800 bg-slate-900/80 space-y-2">
+          <div className="p-3 border-t border-[var(--border-subtle)] ui-panel-solid space-y-2">
             <textarea
               rows={2}
               value={inputText}
@@ -775,23 +775,23 @@ export const MainConsolePage: React.FC = () => {
                 }
               }}
               placeholder={mode === 'manual' ? "Paste customer message to analyze, or type your agent reply..." : "Type your agent response..."}
-              className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 text-xs focus:outline-none focus:border-indigo-500 resize-none"
+              className="ui-textarea resize-none"
             />
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-slate-500">Press Enter to send</span>
+              <span className="text-[10px] text-[var(--text-faint)]">Press Enter to send</span>
               {mode === 'manual' ? (
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleSendAgentResponse}
                     disabled={!inputText.trim()}
-                    className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50"
+                    className="ui-btn ui-btn-primary px-3 py-1.5"
                   >
                     <Send className="w-3.5 h-3.5" /> Send Agent Reply
                   </button>
                   <button
                     onClick={handleManualAnalyze}
                     disabled={!inputText.trim() || loadingTurn}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50"
+                    className="ui-btn px-3 py-1.5 text-white disabled:opacity-50" style={{ backgroundColor: 'var(--success)' }}
                   >
                     <Sparkles className="w-3.5 h-3.5" /> Analyze Customer
                   </button>
@@ -800,7 +800,7 @@ export const MainConsolePage: React.FC = () => {
                 <button
                   onClick={handleSendAgentResponse}
                   disabled={!inputText.trim()}
-                  className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50"
+                  className="ui-btn ui-btn-primary px-3.5 py-1.5"
                 >
                   <Send className="w-3.5 h-3.5" /> Send Reply
                 </button>
@@ -810,20 +810,18 @@ export const MainConsolePage: React.FC = () => {
         </div>
 
         {/* CENTER PANEL: Real-Time Coaching Dashboard (5 Columns) */}
-        <div className="xl:col-span-5 xl:border-r border-b xl:border-b-0 border-slate-800 flex flex-col p-4 overflow-y-auto space-y-4 bg-slate-950">
+        <div className="xl:col-span-5 xl:border-r border-b xl:border-b-0 border-[var(--border-subtle)] flex flex-col p-4 overflow-y-auto space-y-4 ui-panel">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-indigo-400" />
-              <h2 className="font-bold text-sm text-slate-100">Real-Time Coaching Feed</h2>
+              <Sparkles className="w-5 h-5 text-[var(--brand)]" />
+              <h2 className="font-bold text-sm text-[var(--text-primary)]">Real-Time Coaching Feed</h2>
             </div>
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-950 text-indigo-300 border border-indigo-800/40">
-              LangGraph Engine Active
-            </span>
+            <span className="ui-chip ui-chip-indigo">LangGraph Engine Active</span>
           </div>
 
           {!currentCoaching ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 text-slate-500 border border-dashed border-slate-800 rounded-2xl">
-              <Zap className="w-8 h-8 text-slate-700 mb-2 animate-pulse" />
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 text-[var(--text-faint)] border border-dashed border-[var(--border-subtle)] rounded-2xl">
+              <Zap className="w-8 h-8 text-[var(--text-faint)] mb-2 animate-pulse" />
               <p className="text-xs">Awaiting customer message to calculate live intent, sentiment, empathy scores & recommendations.</p>
             </div>
           ) : (
@@ -831,14 +829,26 @@ export const MainConsolePage: React.FC = () => {
               {/* Escalation Risk Alert Banner */}
               <div className={`p-3.5 rounded-xl border flex items-start gap-3 ${
                 currentCoaching.escalation_risk === 'Critical' || currentCoaching.escalation_risk === 'High'
-                  ? 'bg-rose-950/40 border-rose-800/60 text-rose-200'
+                  ? 'border-[color-mix(in_srgb,var(--danger)_30%,transparent)]'
                   : currentCoaching.escalation_risk === 'Medium'
-                  ? 'bg-amber-950/40 border-amber-800/60 text-amber-200'
-                  : 'bg-emerald-950/40 border-emerald-800/60 text-emerald-200'
-              }`}>
+                  ? 'border-[color-mix(in_srgb,var(--warning)_30%,transparent)]'
+                  : 'border-[color-mix(in_srgb,var(--success)_30%,transparent)]'
+              }`}
+                style={{
+                  background: currentCoaching.escalation_risk === 'Critical' || currentCoaching.escalation_risk === 'High'
+                    ? 'color-mix(in srgb, var(--danger) 12%, transparent)'
+                    : currentCoaching.escalation_risk === 'Medium'
+                    ? 'color-mix(in srgb, var(--warning) 12%, transparent)'
+                    : 'color-mix(in srgb, var(--success) 12%, transparent)',
+                  color: currentCoaching.escalation_risk === 'Critical' || currentCoaching.escalation_risk === 'High'
+                    ? 'var(--danger)'
+                    : currentCoaching.escalation_risk === 'Medium'
+                    ? 'var(--warning)'
+                    : 'var(--success)'
+                }}>
                 <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
                 <div className="text-xs space-y-1">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-4">
                     <span className="font-bold uppercase tracking-wider">Escalation Risk: {currentCoaching.escalation_risk}</span>
                     <span className="text-[10px] opacity-80">Frustration: {Math.round(currentCoaching.frustration * 100)}%</span>
                   </div>
@@ -848,58 +858,58 @@ export const MainConsolePage: React.FC = () => {
 
               {/* Intent & Sentiment Badges */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                  <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Detected Intent</span>
-                  <p className="font-bold text-xs text-indigo-300">{currentCoaching.intent}</p>
+                <div className="p-3 ui-card rounded-xl space-y-1">
+                  <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">Detected Intent</span>
+                  <p className="font-bold text-xs text-[var(--brand)]">{currentCoaching.intent}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                  <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Customer Emotion</span>
-                  <div className="flex items-center justify-between">
-                    <p className="font-bold text-xs text-rose-400">{currentCoaching.emotion}</p>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">{currentCoaching.sentiment}</span>
+                <div className="p-3 ui-card rounded-xl space-y-1">
+                  <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">Customer Emotion</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-bold text-xs text-[var(--danger)]">{currentCoaching.emotion}</p>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded ui-card-raised text-[var(--text-secondary)]">{currentCoaching.sentiment}</span>
                   </div>
                 </div>
               </div>
 
               {/* Quality Score Metrics */}
-              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-                <h3 className="text-xs font-semibold text-slate-300">Response Evaluation Metrics</h3>
+              <div className="p-4 ui-card rounded-2xl space-y-3">
+                <h3 className="text-xs font-semibold text-[var(--text-secondary)]">Response Evaluation Metrics</h3>
                 <div className="space-y-2.5 text-xs">
                   <div>
                     <div className="flex justify-between text-[11px] mb-1">
-                      <span className="text-slate-400">Grammar & Quality</span>
-                      <span className="font-semibold text-emerald-400">{currentCoaching.grammar_score}%</span>
+                      <span className="text-[var(--text-muted)]">Grammar & Quality</span>
+                      <span className="font-semibold text-[var(--success)]">{currentCoaching.grammar_score}%</span>
                     </div>
-                    <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${currentCoaching.grammar_score}%` }}></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-[11px] mb-1">
-                      <span className="text-slate-400">Tone & Professionalism</span>
-                      <span className="font-semibold text-indigo-400">{currentCoaching.tone_score}%</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${currentCoaching.tone_score}%` }}></div>
+                    <div className="h-1.5 ui-progress-track">
+                      <div className="h-full rounded-full" style={{ width: `${currentCoaching.grammar_score}%`, background: 'var(--success)' }}></div>
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between text-[11px] mb-1">
-                      <span className="text-slate-400">Empathy Score</span>
-                      <span className="font-semibold text-purple-400">{currentCoaching.empathy_score}%</span>
+                      <span className="text-[var(--text-muted)]">Tone & Professionalism</span>
+                      <span className="font-semibold text-[var(--brand)]">{currentCoaching.tone_score}%</span>
                     </div>
-                    <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-purple-500 rounded-full" style={{ width: `${currentCoaching.empathy_score}%` }}></div>
+                    <div className="h-1.5 ui-progress-track">
+                      <div className="h-full rounded-full" style={{ width: `${currentCoaching.tone_score}%`, background: 'var(--brand)' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-[11px] mb-1">
+                      <span className="text-[var(--text-muted)]">Empathy Score</span>
+                      <span className="font-semibold text-[var(--info)]">{currentCoaching.empathy_score}%</span>
+                    </div>
+                    <div className="h-1.5 ui-progress-track">
+                      <div className="h-full rounded-full" style={{ width: `${currentCoaching.empathy_score}%`, background: 'var(--info)' }}></div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Recommended Response Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-b from-indigo-950/40 to-slate-900 border border-indigo-500/30 space-y-3">
+              <div className="p-4 rounded-2xl ui-card border-[color-mix(in_srgb,var(--brand)_35%,transparent)] space-y-3">
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-indigo-400" /> Recommended Response
+                  <span className="text-xs font-bold text-[var(--brand)] flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4" /> Recommended Response
                   </span>
                   <div className="flex items-center gap-2">
                     <button
@@ -907,23 +917,22 @@ export const MainConsolePage: React.FC = () => {
                         if (currentCoaching?.suggested_reply) handleReadAloud('__suggested_reply__', suggestedText());
                       }}
                       title={speakingMsgId === '__suggested_reply__' ? 'Stop reading' : `Read aloud (${readerLabel(readerLang)})`}
-                      className={`px-2.5 py-1 rounded text-white text-[11px] font-semibold flex items-center gap-1 transition shadow-md ${
-                        speakingMsgId === '__suggested_reply__'
-                          ? 'bg-emerald-600'
-                          : 'bg-slate-800 hover:bg-slate-700'
+                      className={`ui-btn px-2.5 py-1 text-white transition ${
+                        speakingMsgId === '__suggested_reply__' ? '' : 'ui-btn-ghost text-[var(--text-primary)]'
                       }`}
+                      style={speakingMsgId === '__suggested_reply__' ? { backgroundColor: 'var(--success)' } : undefined}
                     >
                       <Volume2 className="w-3 h-3" /> {speakingMsgId === '__suggested_reply__' ? 'Stop' : 'Read'}
                     </button>
                     <button
                       onClick={handleCopyReply}
-                      className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-semibold flex items-center gap-1 transition shadow-md"
+                      className="ui-btn ui-btn-ghost px-2.5 py-1 text-[var(--text-primary)]"
                     >
                       <Copy className="w-3 h-3" /> {copiedReply ? 'Copied!' : 'Copy'}
                     </button>
                     <button
                       onClick={handleApplySuggestedReply}
-                      className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-semibold flex items-center gap-1 transition shadow-md"
+                      className="ui-btn ui-btn-primary px-2.5 py-1"
                     >
                       <Copy className="w-3 h-3" /> Use Response
                     </button>
@@ -938,9 +947,10 @@ export const MainConsolePage: React.FC = () => {
                         title="Helpful — keep suggesting responses like this"
                         className={`px-2 py-1 rounded-lg border text-[11px] font-semibold flex items-center gap-1.5 transition disabled:opacity-60 ${
                           feedbackFor.rating === 'helpful'
-                            ? 'bg-emerald-600/20 border-emerald-500/60 text-emerald-300'
-                            : 'bg-slate-800/70 border-slate-700 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-300'
+                            ? 'border-[color-mix(in_srgb,var(--success)_60%,transparent)] text-[var(--success)]'
+                            : 'ui-card-raised text-[var(--text-secondary)] hover:text-[var(--success)]'
                         }`}
+                        style={feedbackFor.rating === 'helpful' ? { background: 'color-mix(in srgb, var(--success) 18%, transparent)' } : undefined}
                       >
                         <ThumbsUp className="w-3.5 h-3.5" />
                         {feedbackFor.rating === 'helpful' ? 'Marked Helpful' : 'Helpful'}
@@ -951,38 +961,39 @@ export const MainConsolePage: React.FC = () => {
                         title="Not helpful — coaching will adapt"
                         className={`px-2 py-1 rounded-lg border text-[11px] font-semibold flex items-center gap-1.5 transition disabled:opacity-60 ${
                           feedbackFor.rating === 'not_helpful'
-                            ? 'bg-rose-600/20 border-rose-500/60 text-rose-300'
-                            : 'bg-slate-800/70 border-slate-700 text-slate-300 hover:border-rose-500/50 hover:text-rose-300'
+                            ? 'border-[color-mix(in_srgb,var(--danger)_60%,transparent)] text-[var(--danger)]'
+                            : 'ui-card-raised text-[var(--text-secondary)] hover:text-[var(--danger)]'
                         }`}
+                        style={feedbackFor.rating === 'not_helpful' ? { background: 'color-mix(in srgb, var(--danger) 18%, transparent)' } : undefined}
                       >
                         <ThumbsDown className="w-3.5 h-3.5" />
                         {feedbackFor.rating === 'not_helpful' ? 'Needs Improvement' : 'Needs Improvement'}
                       </button>
                     </div>
                     {feedbackFor.rating && (
-                      <span className="text-[10px] text-slate-500 italic shrink-0">
+                      <span className="text-[10px] text-[var(--text-faint)] italic shrink-0">
                         Feedback recorded — future suggestions will adapt.
                       </span>
                     )}
                   </div>
                 )}
-                <p className="text-xs leading-relaxed text-slate-200 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
+                <p className="text-xs leading-relaxed text-[var(--text-primary)] ui-card-raised p-3 rounded-xl">
                   {suggestedText()}
                 </p>
-                <div className="text-[11px] text-slate-400 space-y-1">
-                  <p className="font-medium text-slate-300">Reasoning:</p>
+                <div className="text-[11px] text-[var(--text-muted)] space-y-1">
+                  <p className="font-medium text-[var(--text-secondary)]">Reasoning:</p>
                   <p>{currentCoaching.reasoning}</p>
                 </div>
               </div>
 
               {/* Improvement Tips */}
               {currentCoaching.improvement_tips && currentCoaching.improvement_tips.length > 0 && (
-                <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 text-xs">
-                  <span className="font-semibold text-slate-300">Coaching Guidance & Tips</span>
-                  <ul className="space-y-1 text-slate-400 text-[11px]">
+                <div className="p-3.5 ui-card rounded-xl space-y-2 text-xs">
+                  <span className="font-semibold text-[var(--text-secondary)]">Coaching Guidance & Tips</span>
+                  <ul className="space-y-1 text-[var(--text-muted)] text-[11px]">
                     {currentCoaching.improvement_tips.map((tip, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[var(--brand)] shrink-0 mt-0.5" />
                         <span>{tip}</span>
                       </li>
                     ))}
@@ -994,18 +1005,18 @@ export const MainConsolePage: React.FC = () => {
         </div>
 
         {/* RIGHT PANEL: RAG Knowledge Recommendations (3 Columns) */}
-        <div className="xl:col-span-3 flex flex-col p-4 overflow-y-auto space-y-4 bg-slate-900/40">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="xl:col-span-3 flex flex-col p-4 overflow-y-auto space-y-4 ui-panel">
+          <div className="flex items-center justify-between ui-panel-solid rounded-xl px-3 py-2.5">
             <div className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-indigo-400" />
-              <h2 className="font-semibold text-xs text-slate-200">RAG Knowledge Base</h2>
+              <BookOpen className="w-4 h-4 text-[var(--brand)]" />
+              <h2 className="font-semibold text-xs text-[var(--text-primary)]">RAG Knowledge Base</h2>
             </div>
-            <span className="text-[10px] text-slate-400">ChromaDB</span>
+            <span className="text-[10px] text-[var(--text-faint)]">ChromaDB</span>
           </div>
 
           {!currentCoaching || !currentCoaching.knowledge_citations || currentCoaching.knowledge_citations.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-500 text-xs">
-              <BookOpen className="w-8 h-8 text-slate-700 mb-2" />
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[var(--text-faint)] text-xs">
+              <BookOpen className="w-8 h-8 text-[var(--text-faint)] mb-2" />
               <p>Relevant FAQs, troubleshooting steps, and policy documents will surface here automatically.</p>
             </div>
           ) : (
@@ -1014,22 +1025,22 @@ export const MainConsolePage: React.FC = () => {
                 <div
                   key={idx}
                   onClick={() => setSelectedCitation(doc)}
-                  className="p-3.5 rounded-xl bg-slate-900 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/40 cursor-pointer transition space-y-2 group"
+                  className="p-3.5 ui-card-raised hover:!border-[color-mix(in_srgb,var(--brand)_45%,transparent)] cursor-pointer transition space-y-2 group"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h4 className="font-semibold text-xs text-slate-200 group-hover:text-indigo-300 transition line-clamp-2">
+                    <h4 className="font-semibold text-xs text-[var(--text-primary)] group-hover:text-[var(--brand)] transition line-clamp-2">
                       {doc.title}
                     </h4>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800/40 shrink-0">
+                    <span className="ui-chip ui-chip-emerald shrink-0">
                       {Math.round((doc.confidence || 0.9) * 100)}% Match
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 line-clamp-3 leading-relaxed">
+                  <p className="text-[11px] text-[var(--text-muted)] line-clamp-3 leading-relaxed">
                     {doc.snippet}
                   </p>
-                  <div className="flex items-center justify-between text-[10px] text-slate-500 border-t border-slate-800/60 pt-2">
+                  <div className="flex items-center justify-between text-[10px] text-[var(--text-faint)] border-t pt-2" style={{ borderColor: 'var(--border-subtle)' }}>
                     <span>Source: {doc.source}</span>
-                    <span className="text-indigo-400 font-medium">Click to view</span>
+                    <span className="text-[var(--brand)] font-medium">Click to view</span>
                   </div>
                 </div>
               ))}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Save, Key, Cpu, Sliders, CheckCircle } from 'lucide-react';
+import { Settings as SettingsIcon, Save, Key, Sliders, CheckCircle, Server } from 'lucide-react';
 import { api } from '../services/api';
 
 export const SettingsPage: React.FC = () => {
@@ -54,64 +54,70 @@ export const SettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-slate-950 text-slate-100 min-h-screen">
+    <div className="ui-page p-5 md:p-8 space-y-7 min-h-screen">
       <div>
-        <h1 className="text-2xl font-bold text-slate-100">System Settings & Configuration</h1>
-        <p className="text-xs text-slate-400 mt-1">Configure LLM providers, RAG chunking parameters, and vector embeddings.</p>
+        <p className="ui-eyebrow text-[11px] uppercase tracking-[.16em] font-semibold flex items-center gap-1.5">
+          <SettingsIcon className="w-3 h-3" /> Runtime configuration
+        </p>
+        <h1 className="ui-header-title page-heading text-2xl md:text-3xl font-bold mt-1">System Settings & Configuration</h1>
+        <p className="ui-subtext text-xs mt-2">Configure LLM providers, RAG chunking parameters, and vector embeddings.</p>
       </div>
 
       <form onSubmit={handleSave} className="max-w-4xl space-y-6 text-xs">
         {saved && (
-          <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 flex items-center gap-2">
+          <div className="p-3.5 rounded-xl flex items-center gap-2" style={{ backgroundColor: 'var(--success)', color: '#fff' }}>
             <CheckCircle className="w-4 h-4" /> System settings updated successfully.
           </div>
         )}
 
         {/* LLM & API Keys */}
-        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-          <h2 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-            <Key className="w-4 h-4 text-indigo-400" /> LLM Provider API Keys & Model
-          </h2>
+        <div className="ui-card p-6 rounded-2xl space-y-4">
+          <div className="flex items-center gap-2 border-b border-[var(--border-subtle)] pb-3">
+            <span className="ui-icon-tile"><Key className="w-4 h-4" /></span>
+            <h2 className="ui-header-title text-sm font-bold">LLM Provider API Keys & Model</h2>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">OpenAI API Key</label>
+              <label className="ui-label">OpenAI API Key</label>
               <input
                 type="password"
                 value={openaiKey}
                 onChange={(e) => setOpenaiKey(e.target.value)}
                 placeholder="sk-proj-..."
-                className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
+                className="ui-input"
               />
             </div>
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">Google Gemini API Key</label>
+              <label className="ui-label">Google Gemini API Key</label>
               <input
                 type="password"
                 value={geminiKey}
                 onChange={(e) => setGeminiKey(e.target.value)}
                 placeholder="AIzaSy..."
-                className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 mb-1 font-medium">Groq API Key</label>
-              <input
-                type="password"
-                value={groqKey}
-                onChange={(e) => setGroqKey(e.target.value)}
-                placeholder="gsk_..."
-                className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
+                className="ui-input"
               />
             </div>
           </div>
 
+          <div>
+            <label className="ui-label">Groq API Key</label>
+            <input
+              type="password"
+              value={groqKey}
+              onChange={(e) => setGroqKey(e.target.value)}
+              placeholder="gsk_..."
+              className="ui-input max-w-full md:max-w-[50%]"
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">LLM Model</label>
+              <label className="ui-label">LLM Model</label>
               <select
                 value={llmModel}
                 onChange={(e) => setLlmModel(e.target.value)}
-                className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
+                className="ui-select"
               >
                 <option value="gpt-4o">GPT-4o / GPT-4.1 Compatible</option>
                 <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
@@ -120,11 +126,13 @@ export const SettingsPage: React.FC = () => {
                 <option value="llama-3.3-70b-versatile">Groq: Llama 3.3 70B Versatile</option>
                 <option value="llama-3.1-8b-instant">Groq: Llama 3.1 8B Instant</option>
                 <option value="llama3-70b-8192">Groq: Llama 3 70B</option>
+                <option value="openai/gpt-oss-120b">Groq: OpenAI GPT-OSS 120B</option>
+                <option value="openai/gpt-oss-20b">Groq: OpenAI GPT-OSS 20B</option>
                 <option value="local-fallback">Offline Fallback Engine (Zero API Key)</option>
               </select>
             </div>
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">Temperature: {temperature}</label>
+              <label className="ui-label">Temperature: {temperature}</label>
               <input
                 type="range"
                 min="0.0"
@@ -132,51 +140,62 @@ export const SettingsPage: React.FC = () => {
                 step="0.1"
                 value={temperature}
                 onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                className="w-full accent-indigo-500 mt-2"
+                className="w-full accent-[var(--brand)] mt-2"
               />
             </div>
           </div>
         </div>
 
         {/* RAG Pipeline Settings */}
-        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-          <h2 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-            <Sliders className="w-4 h-4 text-indigo-400" /> RAG Ingestion & Chunking Parameters
-          </h2>
+        <div className="ui-card p-6 rounded-2xl space-y-4">
+          <div className="flex items-center gap-2 border-b border-[var(--border-subtle)] pb-3">
+            <span className="ui-icon-tile"><Sliders className="w-4 h-4" /></span>
+            <h2 className="ui-header-title text-sm font-bold">RAG Ingestion & Chunking Parameters</h2>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">Embedding Model</label>
+              <label className="ui-label">Embedding Model</label>
               <input
                 type="text"
                 value={embeddingModel}
                 onChange={(e) => setEmbeddingModel(e.target.value)}
-                className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
+                className="ui-input"
               />
             </div>
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">Chunk Size (Characters)</label>
+              <label className="ui-label">Chunk Size (Characters)</label>
               <input
                 type="number"
                 value={chunkSize}
                 onChange={(e) => setChunkSize(parseInt(e.target.value) || 800)}
-                className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
+                className="ui-input"
               />
             </div>
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">Chunk Overlap (Characters)</label>
+              <label className="ui-label">Chunk Overlap (Characters)</label>
               <input
                 type="number"
                 value={chunkOverlap}
                 onChange={(e) => setChunkOverlap(parseInt(e.target.value) || 150)}
-                className="w-full bg-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500"
+                className="ui-input"
               />
             </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl ui-card-raised border-[var(--border-subtle)] flex items-start gap-3 text-[11px] ui-subtext">
+            <span className="ui-icon-tile w-8 h-8 rounded-lg"><Server className="w-3.5 h-3.5" /></span>
+            <p className="leading-relaxed">
+              Preference: <span className="font-semibold ui-table-cell">ChromaDB (Local Persistence)</span> with
+              <span className="font-semibold ui-table-cell"> sentence-transformers/all-MiniLM-L6-v2 </span>
+              embeddings. Repository chunk default is 800 / 150 overlap but you can override it here.
+            </p>
           </div>
         </div>
 
         <button
           type="submit"
-          className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold flex items-center gap-2 transition shadow-lg shadow-indigo-600/20"
+          className="ui-btn ui-btn-primary px-6 py-3"
         >
           <Save className="w-4 h-4" /> Save System Settings
         </button>

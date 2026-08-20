@@ -25,7 +25,7 @@ export const RegisterPage: React.FC = () => {
         full_name: fullName
       });
       setUser(res.data.user, res.data.access_token);
-      navigate('/console');
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Registration failed.');
     } finally {
@@ -42,7 +42,7 @@ export const RegisterPage: React.FC = () => {
           </div>
           <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-indigo-400">Create workspace access</p>
           <h1 className="page-heading text-2xl font-bold text-slate-100">Start coaching better.</h1>
-          <p className="text-xs text-slate-400">Join the AI Customer Support Coaching platform</p>
+          <p className="text-xs text-slate-400">Join the NovaDesk AI customer support co-pilot platform</p>
         </div>
 
         {error && (
