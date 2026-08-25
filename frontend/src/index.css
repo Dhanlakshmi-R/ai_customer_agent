@@ -313,6 +313,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   z-index: -2;
   background: conic-gradient(from 0deg, transparent 0deg 40deg, #6366f1 90deg, #8b5cf6 130deg, #22d3ee 175deg, transparent 220deg 360deg);
   animation: spin-linear 7s linear infinite;
+  pointer-events: none;
 }
 .login-ring::after {
   content: "";
@@ -321,6 +322,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   z-index: -1;
   border-radius: calc(1.6rem - 1px);
   background: rgba(10, 13, 22, .92);
+  pointer-events: none;
 }
 .light .login-ring { background: rgba(255, 255, 255, .72); border-color: rgba(100, 116, 139, .18); box-shadow: 0 22px 55px rgba(15, 23, 42, .14); }
 .light .login-ring::after { background: rgba(255, 255, 255, .96); }
@@ -335,6 +337,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   background: linear-gradient(105deg, transparent, rgba(255, 255, 255, .5), transparent);
   transform: skewX(-18deg);
   animation: shine-sweep 3s ease-in-out infinite;
+  pointer-events: none;
 }
 @keyframes shine-sweep { 0% { left: -160%; } 60% { left: 170%; } 100% { left: 170%; } }
 
