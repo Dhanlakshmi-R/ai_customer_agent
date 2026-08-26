@@ -1,4 +1,4 @@
-# NovaDesk AI — AI-Powered Customer Support Assistant with Live Response Guidance
+# NovaDesk AI — Development of AI-Powered Customer Support Assistant with Live Response Guidance.
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-teal.svg)
