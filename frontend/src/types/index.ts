@@ -86,15 +86,19 @@ export interface ReportItem {
 
 export interface AnalyticsSummary {
   total_sessions: number;
+  active_sessions: number;
   total_messages: number;
   total_documents: number;
+  total_analyses: number;
   avg_empathy_score: number;
   avg_tone_score: number;
   avg_grammar_score: number;
+  avg_confidence_score: number;
   intent_breakdown: Array<{ name: string; value: number }>;
   sentiment_trend: Array<{ date: string; positive: number; neutral: number; negative: number }>;
   escalation_trends: Array<{ name: string; count: number }>;
   sentiment_distribution: Array<{ name: string; value: number }>;
+  recent_sessions?: Array<{ id: string; mode: string; persona: string; status: string; message_count: number; created_at: string | null }>;
 }
 
 export interface SystemSettings {

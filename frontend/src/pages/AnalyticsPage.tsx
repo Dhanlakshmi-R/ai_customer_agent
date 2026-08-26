@@ -33,13 +33,12 @@ export const AnalyticsPage: React.FC = () => {
 
   useEffect(() => {
     if (activeSession?.id) {
-      setSession(null);
       fetchSession(activeSession.id);
     } else {
       api.get('/session/list').then((res) => {
         const list = res.data || [];
         setSessions(list);
-        const withMessages = list.filter((s: Session) => (s as any).message_count > 1);
+        const withMessages = list.filter((s: Session) => (s as any).message_count >= 1);
         const pool = withMessages.length ? withMessages : list;
         const active = pool.find((s: Session) => s.status === 'active') || pool[0];
         if (active) loadSession(active);
@@ -49,15 +48,17 @@ export const AnalyticsPage: React.FC = () => {
   }, [activeSession?.id, fetchSession]);
 
   useEffect(() => {
-    if (!session || session.status !== 'active') return;
-    const t = setInterval(() => fetchSession(session.id), 5000);
+    if (!session) return;
+    const t = setInterval(() => {
+      if (session.id) fetchSession(session.id);
+    }, 3000);
     return () => clearInterval(t);
-  }, [session, fetchSession]);
+  }, [session?.id, fetchSession]);
 
   const analyzed = (session?.messages || []).filter((m: Message) => m.analysis);
 
   const turnData = analyzed.map((m: Message, i: number) => ({
-    turn: i + 1,
+    turn: m.turn_index || i + 1,
     tone: Math.round(m.analysis!.tone_score),
     grammar: Math.round(m.analysis!.grammar_score),
     empathy: Math.round(m.analysis!.empathy_score),
@@ -143,7 +144,7 @@ export const AnalyticsPage: React.FC = () => {
       {session && (
         <>
           <div className="flex items-center gap-2 flex-wrap">
-            <button onClick={() => navigate(`/console?mode=${session.mode || 'simulator'}`)} className="ui-btn ui-btn-ghost px-3 py-1.5">
+            <button onClick={() => { setActiveSession(session); navigate(`/console?mode=${session.mode || 'simulator'}`); }} className="ui-btn ui-btn-ghost px-3 py-1.5">
               <ArrowLeft className="w-3.5 h-3.5" /> Open in Live Coaching
             </button>
             <span className="ui-chip ui-chip-indigo">Mode: <strong className="uppercase">{session.mode}</strong></span>
@@ -217,27 +218,31 @@ export const AnalyticsPage: React.FC = () => {
                   <Activity className="w-4 h-4 ui-eyebrow" /> Turn-by-turn analysis
                 </h2>
                 <div className="space-y-2">
-                  {analyzed.map((m: Message, i: number) => (
+                  {(session?.messages || []).map((m: Message, i: number) => (
                     <div key={m.id} className="ui-card-flat flex items-start gap-3 p-3 rounded-xl transition">
                       <div className="w-8 h-8 rounded-full ui-chip-indigo flex items-center justify-center font-bold text-xs shrink-0">
-                        {i + 1}
+                        {m.turn_index || i + 1}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <span className={`ui-chip ${m.sender === 'agent' ? 'ui-chip-indigo' : 'ui-chip-rose'}`}>
                             {m.sender}
                           </span>
-                          <span className="ui-subtext text-[10px]">Turn #{m.turn_index}</span>
+                          <span className="ui-subtext text-[10px]">Turn #{m.turn_index || i + 1}</span>
                         </div>
                         <p className="ui-table-cell text-[11px] line-clamp-2">{m.content}</p>
-                        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                          <span className="ui-chip ui-chip-indigo">{m.analysis!.intent}</span>
-                          <span className="ui-chip">{m.analysis!.sentiment}</span>
-                          <span className="ui-chip" style={{ backgroundColor: RISK_COLOR[m.analysis!.escalation_risk] + '22', color: RISK_COLOR[m.analysis!.escalation_risk], borderColor: RISK_COLOR[m.analysis!.escalation_risk] + '44' }}>
-                            {m.analysis!.escalation_risk} risk
-                          </span>
-                          <span className="ui-subtext text-[10px]">tone {Math.round(m.analysis!.tone_score)} • grammar {Math.round(m.analysis!.grammar_score)} • empathy {Math.round(m.analysis!.empathy_score)}</span>
-                        </div>
+                        {m.analysis ? (
+                          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                            <span className="ui-chip ui-chip-indigo">{m.analysis.intent}</span>
+                            <span className="ui-chip">{m.analysis.sentiment}</span>
+                            <span className="ui-chip" style={{ backgroundColor: (RISK_COLOR[m.analysis.escalation_risk] || '#6366f1') + '22', color: RISK_COLOR[m.analysis.escalation_risk] || '#6366f1', borderColor: (RISK_COLOR[m.analysis.escalation_risk] || '#6366f1') + '44' }}>
+                              {m.analysis.escalation_risk} risk
+                            </span>
+                            <span className="ui-subtext text-[10px]">tone {Math.round(m.analysis.tone_score)} · grammar {Math.round(m.analysis.grammar_score)} · empathy {Math.round(m.analysis.empathy_score)}</span>
+                          </div>
+                        ) : (
+                          <span className="ui-subtext text-[10px] mt-1 inline-block">Analysis pending…</span>
+                        )}
                       </div>
                     </div>
                   ))}

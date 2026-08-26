@@ -13,7 +13,9 @@ import {
   Zap,
   TrendingUp,
   Radio,
-  Sparkles
+  Sparkles,
+  BarChart3,
+  Shield
 } from 'lucide-react';
 import { api } from '../services/api';
 import { AnalyticsSummary } from '../types';
@@ -54,6 +56,30 @@ export const DashboardPage: React.FC = () => {
       accent: 'text-indigo-400',
     },
     {
+      label: 'Active Sessions',
+      value: data ? String(data.active_sessions ?? 0) : '—',
+      hint: 'currently running',
+      icon: TrendingUp,
+      tone: 'ui-icon-tile',
+      accent: 'text-cyan-400',
+    },
+    {
+      label: 'Total Messages',
+      value: data ? String(data.total_messages ?? 0) : '—',
+      hint: 'across all sessions',
+      icon: BookOpen,
+      tone: 'ui-icon-tile',
+      accent: 'text-rose-400',
+    },
+    {
+      label: 'Total Analyses',
+      value: data ? String(data.total_analyses ?? 0) : '—',
+      hint: 'coaching turns scored',
+      icon: BarChart3,
+      tone: 'ui-icon-tile',
+      accent: 'text-blue-400',
+    },
+    {
       label: 'Avg Empathy Score',
       value: data ? `${data.avg_empathy_score}%` : '—',
       hint: 'across all analyzed turns',
@@ -68,6 +94,14 @@ export const DashboardPage: React.FC = () => {
       icon: Award,
       tone: 'ui-icon-tile',
       accent: 'text-emerald-400',
+    },
+    {
+      label: 'Avg Confidence',
+      value: data ? `${data.avg_confidence_score ?? 0}%` : '—',
+      hint: 'analysis confidence',
+      icon: Shield,
+      tone: 'ui-icon-tile',
+      accent: 'text-amber-400',
     },
     {
       label: 'RAG Knowledge Index',

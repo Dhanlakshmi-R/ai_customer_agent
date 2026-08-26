@@ -38,5 +38,5 @@ async def get_analytics_summary(
     current_user: User = Depends(get_current_user)
 ):
     engine = AnalyticsEngine(db)
-    summary = await engine.get_dashboard_summary()
+    summary = await engine.get_dashboard_summary(user_id=current_user.id)
     return summary

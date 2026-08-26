@@ -11,7 +11,7 @@ from backend.database.connection import get_db
 from backend.database.repository import Repository
 from backend.rag.ingester import extract_text_from_file
 from backend.rag.chunker import chunk_text
-from backend.rag.vectorstore import vector_store
+from backend.rag.vectorstore import _get_vector_store
 from backend.authentication.rbac import get_current_user
 from backend.database.models import User
 
@@ -62,7 +62,8 @@ async def upload_knowledge_document(
             chunk_overlap=settings.CHUNK_OVERLAP
         )
 
-        vector_store.add_chunks(chunks)
+        vs = _get_vector_store()
+        vs.add_chunks(chunks)
 
         repo = Repository(db)
         doc = await repo.add_document(
@@ -93,7 +94,7 @@ async def search_knowledge_base(
     data: SearchQuerySchema,
     db: AsyncSession = Depends(get_db)
 ):
-    results = vector_store.search(query=data.query, top_k=data.top_k)
+    results = _get_vector_store().search(query=data.query, top_k=data.top_k)
     return {"query": data.query, "results": results}
 
 @router.get("/documents")
@@ -125,7 +126,7 @@ async def delete_document(
     current_user: User = Depends(get_current_user)
 ):
     repo = Repository(db)
-    vector_store.delete_document_chunks(doc_id)
+    _get_vector_store().delete_document_chunks(doc_id)
     success = await repo.delete_document(doc_id)
     if not success:
         raise HTTPException(status_code=404, detail="Document not found.")

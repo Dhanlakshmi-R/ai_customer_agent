@@ -194,11 +194,22 @@ class RAGVectorStore:
                 pass
         return len(self.in_memory_docs)
 
-vector_store = RAGVectorStore()
+vector_store = None
+
+def _get_vector_store():
+    global vector_store
+    if vector_store is None:
+        vector_store = RAGVectorStore()
+    return vector_store
 
 def auto_seed_kb():
     """Auto-seeds the vector store with files from data/knowledge_base/ if empty."""
-    if vector_store.count() == 0:
+    try:
+        vs = _get_vector_store()
+    except Exception as e:
+        print(f"[RAGAutoSeed] Could not initialise vector store: {e}")
+        return
+    if vs.count() == 0:
         import os
         from backend.rag.ingester import extract_text_from_file
         from backend.rag.chunker import chunk_text
@@ -223,7 +234,7 @@ def auto_seed_kb():
                             "category": "Standard Operating Procedure" if "sop" in fname.lower() else "Knowledge Article"
                         }
                         chunks = chunk_text(text, metadata)
-                        added = vector_store.add_chunks(chunks)
+                        added = vs.add_chunks(chunks)
                         total_chunks += added
                 except Exception as e:
                     print(f"[RAGAutoSeed] Error ingesting {fname}: {e}")
