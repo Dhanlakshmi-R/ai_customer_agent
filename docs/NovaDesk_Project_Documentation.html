@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovaDesk AI — Project Documentation</title>
+<style>
+  :root {
+    --bg: #0b1220; --bg2: #111b30; --card: #16213a; --border: #22304e;
+    --emerald: #10b981; --cyan: #22d3ee; --violet: #a78bfa; --amber: #f5a623;
+    --white: #f8fafc; --muted: #9cadc8; --dim: #4b556b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--white); font-family: "Segoe UI", Calibri, Arial, sans-serif; line-height: 1.6; }
+  .wrap { display: flex; min-height: 100vh; }
+  nav { width: 280px; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+  nav .logo { padding: 0 24px 18px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+  nav .logo h1 { font-size: 22px; font-weight: 700; }
+  nav .logo h1 span { color: var(--emerald); }
+  nav .logo p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  nav a { display: block; padding: 8px 24px; color: var(--muted); text-decoration: none; font-size: 13.5px; border-left: 3px solid transparent; transition: all .15s; }
+  nav a:hover { color: var(--white); background: rgba(255,255,255,.04); }
+  nav a.active { color: var(--emerald); border-left-color: var(--emerald); background: rgba(16,185,129,.08); font-weight: 600; }
+  nav .group { font-size: 10.5px; letter-spacing: 1.5px; color: var(--dim); text-transform: uppercase; padding: 14px 24px 4px; }
+  main { flex: 1; padding: 48px 56px 80px; max-width: 1000px; }
+  @media (max-width: 900px) { .wrap { flex-direction: column; } nav { width: 100%; height: auto; position: static; } main { padding: 28px 20px 60px; } }
+  section { margin-bottom: 56px; scroll-margin-top: 24px; }
+  .hero { background: linear-gradient(135deg, #101c33 0%, #0b1220 70%); border: 1px solid var(--border); border-radius: 18px; padding: 40px; margin-bottom: 48px; }
+  .hero .tag { display: inline-block; color: var(--emerald); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
+  .hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; }
+  .hero h2 { font-size: 20px; color: var(--cyan); font-weight: 400; margin-top: 6px; }
+  .hero p { color: var(--muted); margin-top: 18px; max-width: 640px; font-size: 15px; }
+  .hero .meta { margin-top: 24px; display: flex; gap: 28px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .hero .meta b { color: var(--white); display: block; font-size: 20px; }
+  h2.sec { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  h2.sec span { color: var(--emerald); }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+  h3 { color: var(--cyan); font-size: 17px; margin: 26px 0 10px; }
+  p { color: var(--muted); font-size: 14.5px; margin-bottom: 12px; }
+  ul, ol { margin: 0 0 16px 22px; color: var(--muted); font-size: 14.5px; }
+  li { margin-bottom: 7px; }
+  li b { color: var(--white); }
+  code { background: #0d1526; border: 1px solid var(--border); color: var(--cyan); padding: 1px 7px; border-radius: 6px; font-size: 13px; font-family: Consolas, monospace; }
+  pre { background: #0d1526; border: 1px solid var(--border); border-radius: 12px; padding: 18px; overflow-x: auto; margin: 14px 0 20px; }
+  pre code { background: none; border: none; padding: 0; color: #b8e6d8; font-size: 13px; line-height: 1.55; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin: 14px 0; }
+  .card h4 { color: var(--emerald); font-size: 15px; margin-bottom: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; font-size: 13.5px; }
+  th { text-align: left; color: var(--emerald); border-bottom: 2px solid var(--emerald); padding: 10px 12px; font-size: 12.5px; letter-spacing: .5px; text-transform: uppercase; }
+  td { color: var(--muted); border-bottom: 1px solid var(--border); padding: 10px 12px; vertical-align: top; }
+  td b { color: var(--white); }
+  .tagchip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; border: 1px solid var(--border); color: var(--muted); margin-right: 6px; margin-bottom: 6px; }
+  .tagchip.g { color: var(--emerald); border-color: rgba(16,185,129,.4); }
+  .tagchip.c { color: var(--cyan); border-color: rgba(34,211,238,.4); }
+  .tagchip.v { color: var(--violet); border-color: rgba(167,139,250,.4); }
+  .tagchip.a { color: var(--amber); border-color: rgba(245,166,35,.4); }
+  blockquote { border-left: 3px solid var(--emerald); background: rgba(16,185,129,.07); padding: 14px 18px; border-radius: 0 12px 12px 0; color: var(--muted); font-size: 14.5px; margin: 16px 0; font-style: italic; }
+  .qa { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 22px; margin: 12px 0; }
+  .qa b { color: var(--cyan); display: block; margin-bottom: 6px; font-size: 14.5px; }
+  .qa p { margin: 0; font-size: 14px; }
+  .flow { font-family: Consolas, monospace; font-size: 13px; color: var(--muted); }
+  .flow span { color: var(--emerald); }
+  footer { border-top: 1px solid var(--border); margin-top: 40px; padding-top: 22px; color: var(--dim); font-size: 12.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav id="nav">
+    <div class="logo">
+      <h1>Nova<span>Desk</span> AI</h1>
+      <p>Project Documentation &amp; Knowledge Transfer</p>
+    </div>
+    <div class="group">Overview</div>
+    <a href="#pitch">Elevator Pitch</a>
+    <a href="#problem">The Problem</a>
+    <a href="#solution">The Solution</a>
+    <div class="group">Architecture</div>
+    <a href="#architecture">System Architecture</a>
+    <a href="#flow">Per-Turn Flow</a>
+    <a href="#agents">Multi-Agent System</a>
+    <a href="#stack">Technology Stack</a>
+    <a href="#rag">RAG Pipeline</a>
+    <div class="group">Features</div>
+    <a href="#features">Core Features</a>
+    <a href="#database">Database Design</a>
+    <a href="#frontend">Frontend Architecture</a>
+    <a href="#api">API Endpoints</a>
+    <div class="group">Operations</div>
+    <a href="#deploy">Deployment</a>
+    <a href="#run">Run &amp; Setup</a>
+    <a href="#config">Configuration</a>
+    <a href="#testing">Testing</a>
+    <div class="group">KT Prep</div>
+    <a href="#qa">Q&amp;A Prep</a>
+    <a href="#glossary">Glossary</a>
+  </nav>
+
+  <main>
+    <!-- HERO -->
+    <div class="hero">
+      <span class="tag">AI-Powered Customer Support Platform</span>
+      <h1>NovaDesk AI</h1>
+      <h2>Multi-Agent Real-Time Coaching Platform with Live Response Guidance</h2>
+      <p>A LangGraph-powered multi-agent system that coaches customer support agents during live conversations — analyzing intent, sentiment, escalation risk, and generating suggested replies <b style="color:var(--emerald)">in real-time, not after the call</b>.</p>
+      <div class="meta">
+        <div><b>7+</b>AI agents</div>
+        <div><b>&lt; 100ms</b>provisional results</div>
+        <div><b>3</b>interaction modes</div>
+        <div><b>7</b>languages supported</div>
+        <div><b>Real-time</b>WebSocket coaching</div>
+      </div>
+    </div>
+
+    <!-- 01. ELEVATOR PITCH -->
+    <section id="pitch">
+      <h2 class="sec"><span>01.</span> Elevator Pitch (30 seconds)</h2>
+      <blockquote>"NovaDesk AI is a multi-agent, real-time coaching platform that helps customer support agents perform better during live conversations. Every interaction is analyzed on the fly by a LangGraph-powered pipeline — intent, sentiment, escalation risk, knowledge retrieval, and a suggested reply — before the customer even finishes typing. It features a RAG-powered knowledge base with ChromaDB, three interaction modes (Simulator, Manual, Replay), role-based access control, and works offline with rule-based fallback when no LLM key is configured. After each session, it produces a detailed coaching report with sentiment journeys, score trends, and downloadable PDF summaries."</blockquote>
+    </section>
+
+    <!-- 02. THE PROBLEM -->
+    <section id="problem">
+      <h2 class="sec"><span>02.</span> The Problem</h2>
+      <table>
+        <tr><th>Pain Point</th><th>Detail</th></tr>
+        <tr><td><b>Lack of real-time guidance</b></td><td>Agents receive coaching only after calls end (post-call reviews) — reactive and slow</td></tr>
+        <tr><td><b>High cognitive load</b></td><td>Juggling multiple conversations while maintaining quality is exhausting</td></tr>
+        <tr><td><b>Inconsistent response quality</b></td><td>Without immediate feedback, agents may provide suboptimal replies</td></tr>
+        <tr><td><b>Delayed escalation</b></td><td>Critical customer issues may not be flagged until it's too late</td></tr>
+        <tr><td><b>Limited practice opportunities</b></td><td>New agents lack safe environments to practice before handling real customers</td></tr>
+      </table>
+    </section>
+
+    <!-- 03. THE SOLUTION -->
+    <section id="solution">
+      <h2 class="sec"><span>03.</span> The Solution</h2>
+      <div class="grid">
+        <div class="card"><h4>Live Coaching Engine</h4><p>Multi-agent AI pipeline analyzing every conversation turn in real-time, providing instant scores (tone, grammar, empathy) and suggested replies.</p></div>
+        <div class="card"><h4>Customer Simulator</h4><p>AI-powered customer personas that generate realistic conversations for agent training across 6 emotional personas.</p></div>
+        <div class="card"><h4>RAG Knowledge Base</h4><p>Upload and ingest support documents (PDF, DOCX, TXT) into ChromaDB vector store for contextual knowledge retrieval.</p></div>
+        <div class="card"><h4>Escalation Monitoring</h4><p>Automatic detection of escalation risk levels (Low, Medium, High, Critical) with recommended supervisor actions.</p></div>
+        <div class="card"><h4>Post-Interaction Analytics</h4><p>Detailed coaching reports with sentiment journeys, score trends, and downloadable PDF summaries.</p></div>
+        <div class="card"><h4>Multi-Language Support</h4><p>Real-time translation across Hindi, Hinglish, Kannada, Telugu, Tamil, Marathi, and Bengali.</p></div>
+      </div>
+    </section>
+
+    <!-- 04. SYSTEM ARCHITECTURE -->
+    <section id="architecture">
+      <h2 class="sec"><span>04.</span> System Architecture</h2>
+      <pre><code>+-------------------------------------------------------------------------------+
+|                             REACT FRONTEND (Vite + TS)                        |
+|   +-------------------+     +---------------------+     +-----------------+   |
+|   | 3-Panel Main UI   |     | Executive Dashboard |     | Knowledge RAG   |   |
+|   +-------------------+     +---------------------+     +-----------------+   |
++---------------------------------------+---------------------------------------+
+                                        |  REST / WebSockets API
+                                        v
++-------------------------------------------------------------------------------+
+|                            FASTAPI BACKEND SYSTEM                             |
+|                                                                               |
+|  +-------------------+   +--------------------+   +-----------------------+   |
+|  | JWT & RBAC Auth   |   | Session Controller |   | PDF Report Generator  |   |
+|  +-------------------+   +--------------------+   +-----------------------+   |
+|                                                                               |
+|  +-------------------------------------------------------------------------+  |
+|  |                 LANGGRAPH MULTI-AGENT ORCHESTRATOR                      |  |
+|  |                                                                         |  |
+|  |  +-------------------+       +-----------------------+                  |  |
+|  |  | Intent & Sentiment| ----> | Knowledge RAG Agent   |                  |  |
+|  |  +-------------------+       +-----------------------+                  |  |
+|  |            |                             |                              |  |
+|  |            v                             v                              |  |
+|  |  +-------------------+       +-----------------------+                  |  |
+|  |  | Coaching Agent    | ----> | Escalation Risk Agent |                  |  |
+|  |  +-------------------+       +-----------------------+                  |  |
+|  +-------------------------------------------------------------------------+  |
++---------------------------------------+---------------------------------------+
+                                        |
+                 +----------------------+----------------------+
+                 v                                             v
+    +--------------------------+                 +---------------------------+
+    |   ChromaDB Vector Store  |                 |    SQLite / PostgreSQL    |
+    |  (Sentence Transformers) |                 |    (SQLAlchemy Async)     |
+    +--------------------------+                 +---------------------------+</code></pre>
+      <h3>Data Flow</h3>
+      <div class="card">
+        <p class="flow"><span>1.</span> User sends message via REST API or WebSocket<br>
+        <span>2.</span> Orchestrator receives request and routes through LangGraph pipeline<br>
+        <span>3.</span> Knowledge RAG Agent queries ChromaDB for relevant support articles<br>
+        <span>4.</span> Combined Analysis Agent returns intent, sentiment, coaching scores, escalation risk, and suggested reply in a single LLM call<br>
+        <span>5.</span> Response persisted to SQLite via SQLAlchemy<br>
+        <span>6.</span> Coaching feedback returned to frontend in real-time</p>
+      </div>
+    </section>
+
+    <!-- 05. PER-TURN FLOW -->
+    <section id="flow">
+      <h2 class="sec"><span>05.</span> Per-Turn Flow</h2>
+      <div class="card">
+        <p class="flow"><span>1.</span> Customer message arrives (typed, simulated, or replayed)<br>
+        <span>2.</span> <b>LangGraph Orchestrator</b> routes the message through the agent pipeline<br>
+        <span>3.</span> <b>Knowledge RAG Agent</b> &rarr; ChromaDB cosine similarity search &rarr; retrieves relevant KB articles<br>
+        <span>4.</span> <b>Combined Analysis Agent</b> &rarr; single LLM call returning intent, sentiment, coaching scores, escalation risk, and suggested reply<br>
+        <span>5.</span> Results persisted to database<br>
+        <span>6.</span> Real-time coaching feedback streamed back via WebSocket</p>
+      </div>
+      <p>The pipeline is optimized for speed: the Knowledge RAG node is a fast no-LLM retrieval step, followed by a single LLM round-trip for the Combined Analysis Agent.</p>
+    </section>
+
+    <!-- 06. MULTI-AGENT SYSTEM -->
+    <section id="agents">
+      <h2 class="sec"><span>06.</span> The Multi-Agent System (7+ Agents)</h2>
+      <p>Every agent has <b>one responsibility</b>. The pipeline uses a two-phase analysis approach: instant rule-based provisional results (&lt; 100ms), followed by LLM refinement in the background.</p>
+      <table>
+        <tr><th>Agent</th><th>Responsibility</th></tr>
+        <tr><td><b>Customer Simulator Agent</b></td><td>Generates persona-consistent customer turns (Friendly, Confused, Angry, Technical, Business, Emotional)</td></tr>
+        <tr><td><b>Intent &amp; Sentiment Agent</b></td><td>Classifies intent, emotion, sentiment, urgency, and frustration score (0.0 to 1.0)</td></tr>
+        <tr><td><b>Combined Analysis Agent</b></td><td>Single-pass intent + sentiment + coaching + escalation analysis (one LLM round-trip)</td></tr>
+        <tr><td><b>Knowledge Recommendation Agent</b></td><td>RAG retrieval over ChromaDB with cosine similarity search</td></tr>
+        <tr><td><b>Coaching &amp; Response Agent</b></td><td>Scores agent drafts and generates the ideal reply with tone/clarity feedback</td></tr>
+        <tr><td><b>Escalation Risk Monitor</b></td><td>Flags Low / Medium / High / Critical risk with recommended actions</td></tr>
+        <tr><td><b>Post-Interaction Summary Agent</b></td><td>Generates structured coaching summaries and PDF reports</td></tr>
+      </table>
+      <h3>Fallback Mechanism</h3>
+      <p>When no LLM API key is configured, the system falls back to deterministic rule-based logic: keyword matching for intent classification, sentiment analysis via keyword counting, pre-defined suggested replies per intent, and threshold-based escalation scoring.</p>
+    </section>
+
+    <!-- 07. TECHNOLOGY STACK -->
+    <section id="stack">
+      <h2 class="sec"><span>07.</span> Technology Stack</h2>
+      <h3>Backend</h3>
+      <table>
+        <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+        <tr><td><b>API Framework</b></td><td>FastAPI + Uvicorn</td><td>Async REST API and WebSocket server</td></tr>
+        <tr><td><b>Data Validation</b></td><td>Pydantic v2</td><td>Request/response schemas</td></tr>
+        <tr><td><b>Orchestration</b></td><td>LangGraph</td><td>Multi-agent workflow graph</td></tr>
+        <tr><td><b>LLM Integration</b></td><td>OpenAI / Google Gemini / Groq</td><td>AI model inference</td></tr>
+        <tr><td><b>Vector Store</b></td><td>ChromaDB</td><td>RAG document storage and retrieval</td></tr>
+        <tr><td><b>Database</b></td><td>SQLAlchemy 2.0 + aiosqlite</td><td>Async SQLite ORM</td></tr>
+        <tr><td><b>Authentication</b></td><td>JWT (python-jose) + passlib/bcrypt</td><td>Secure auth with RBAC</td></tr>
+        <tr><td><b>Reports</b></td><td>ReportLab</td><td>PDF generation</td></tr>
+        <tr><td><b>Real-time</b></td><td>WebSockets (FastAPI)</td><td>Live coaching streaming</td></tr>
+      </table>
+      <h3>Frontend</h3>
+      <table>
+        <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+        <tr><td><b>Framework</b></td><td>React 19 + TypeScript</td><td>UI components</td></tr>
+        <tr><td><b>Build Tool</b></td><td>Vite 8</td><td>Fast dev server and bundler</td></tr>
+        <tr><td><b>Styling</b></td><td>Tailwind CSS v4</td><td>Glass UI, animations</td></tr>
+        <tr><td><b>State Management</b></td><td>Zustand</td><td>Global client state</td></tr>
+        <tr><td><b>Data Fetching</b></td><td>TanStack Query</td><td>Server state caching</td></tr>
+        <tr><td><b>Charts</b></td><td>Recharts</td><td>Analytics visualizations</td></tr>
+        <tr><td><b>Routing</b></td><td>React Router v7</td><td>SPA navigation</td></tr>
+        <tr><td><b>Motion</b></td><td>Framer Motion</td><td>UI animations</td></tr>
+      </table>
+      <h3>DevOps</h3>
+      <table>
+        <tr><th>Tool</th><th>Purpose</th></tr>
+        <tr><td><b>Docker + Docker Compose</b></td><td>Containerized deployment</td></tr>
+        <tr><td><b>Nginx</b></td><td>Reverse proxy for production</td></tr>
+        <tr><td><b>Render</b></td><td>Cloud hosting platform</td></tr>
+      </table>
+      <div style="margin-top:16px">
+        <span class="tagchip g">FastAPI</span><span class="tagchip g">LangGraph</span><span class="tagchip c">ChromaDB</span><span class="tagchip c">React 19</span><span class="tagchip v">Tailwind CSS</span><span class="tagchip v">Zustand</span><span class="tagchip a">ReportLab</span><span class="tagchip">WebSocket</span><span class="tagchip">JWT RBAC</span>
+      </div>
+    </section>
+
+    <!-- 08. RAG PIPELINE -->
+    <section id="rag">
+      <h2 class="sec"><span>08.</span> RAG — Retrieval-Augmented Generation</h2>
+      <h3>Ingestion</h3>
+      <ul>
+        <li>Supports <code>PDF</code>, <code>DOCX</code>, <code>TXT</code>, <code>MD</code> document formats</li>
+        <li>Auto-chunked into 800-character chunks with 150-character overlap</li>
+        <li>Embedded using <code>sentence-transformers/all-MiniLM-L6-v2</code></li>
+        <li>Stored in ChromaDB vector store for fast similarity search</li>
+      </ul>
+      <h3>Search (Cosine Similarity)</h3>
+      <ul>
+        <li><b>Primary:</b> Semantic search via ChromaDB cosine similarity over embedded documents</li>
+        <li><b>Fallback:</b> When no LLM key is set, keyword-based matching provides basic retrieval</li>
+        <li>Auto-seeds from <code>data/knowledge_base/</code> on first startup</li>
+      </ul>
+      <h3>Document Management</h3>
+      <ul>
+        <li>Upload via REST API (<code>POST /rag/upload</code>)</li>
+        <li>Document versioning and deletion</li>
+        <li>Semantic search endpoint (<code>POST /rag/search</code>)</li>
+      </ul>
+    </section>
+
+    <!-- 09. CORE FEATURES -->
+    <section id="features">
+      <h2 class="sec"><span>09.</span> Core Features</h2>
+      <h3>Live Coaching (WebSocket)</h3>
+      <ul>
+        <li>Real-time conversation streaming with live agent guidance over WebSocket</li>
+        <li>Two-phase analysis: instant rule-based provisional result (&lt; 100ms), followed by LLM refinement in background</li>
+        <li>Per-turn scores for <b>tone</b>, <b>grammar</b>, <b>empathy</b>, <b>confidence</b></li>
+        <li>Ready-to-send <b>suggested reply</b> with reasoning and improvement tips</li>
+      </ul>
+      <h3>Interaction Modes</h3>
+      <table>
+        <tr><th>Mode</th><th>Description</th></tr>
+        <tr><td><b>Simulator Mode</b></td><td>Practice against 6 realistic AI customer personas with emotional progression</td></tr>
+        <tr><td><b>Manual Mode</b></td><td>Paste live customer messages and receive immediate coaching</td></tr>
+        <tr><td><b>Replay Mode</b></td><td>Analyze past transcripts turn by turn with full coaching insights</td></tr>
+      </table>
+      <h3>Knowledge Base Management</h3>
+      <ul>
+        <li>Upload PDF, DOCX, TXT, MD documents</li>
+        <li>Auto-chunked (800 chars, 150 overlap) and embedded into ChromaDB</li>
+        <li>Semantic search with cosine similarity</li>
+        <li>Document versioning and deletion</li>
+      </ul>
+      <h3>Analytics &amp; Reporting</h3>
+      <ul>
+        <li>Executive metrics dashboard with trend charts</li>
+        <li>Sentiment journey visualization per session</li>
+        <li>Score trends over time</li>
+        <li>Downloadable PDF coaching reports</li>
+        <li>Cross-session performance analytics</li>
+      </ul>
+      <h3>Accessibility</h3>
+      <ul>
+        <li>Multi-language translation (Hindi, Hinglish, Kannada, Telugu, Tamil, Marathi, Bengali)</li>
+        <li>Read-aloud functionality for suggested replies</li>
+        <li>Dark/Light theme support</li>
+      </ul>
+    </section>
+
+    <!-- 10. DATABASE DESIGN -->
+    <section id="database">
+      <h2 class="sec"><span>10.</span> Database Design</h2>
+      <table>
+        <tr><th>Table</th><th>Description</th></tr>
+        <tr><td><b>users</b></td><td>Stores user accounts with roles (admin, trainer, agent)</td></tr>
+        <tr><td><b>sessions</b></td><td>Coaching sessions with mode, persona, scenario, and status</td></tr>
+        <tr><td><b>messages</b></td><td>Individual conversation messages within sessions</td></tr>
+        <tr><td><b>coaching_analysis</b></td><td>Per-turn AI analysis results (intent, sentiment, scores, suggested reply)</td></tr>
+        <tr><td><b>coaching_feedback</b></td><td>User feedback on coaching suggestions (helpful/not helpful)</td></tr>
+        <tr><td><b>documents</b></td><td>Uploaded knowledge base documents metadata</td></tr>
+        <tr><td><b>reports</b></td><td>Post-interaction coaching summaries and analytics</td></tr>
+        <tr><td><b>system_settings</b></td><td>Application configuration key-value pairs</td></tr>
+      </table>
+      <h3>Combined Analysis Agent Output</h3>
+      <pre><code>{
+  "intent": "Technical Issue",
+  "sentiment": "Negative",
+  "emotion": "Frustrated / Angry",
+  "urgency": "High",
+  "frustration": 0.75,
+  "tone_score": 82.5,
+  "grammar_score": 91.0,
+  "empathy_score": 78.0,
+  "suggested_reply": "I understand your frustration...",
+  "escalation_risk": "High",
+  "recommended_action": "Transfer to Tier 2"
+}</code></pre>
+    </section>
+
+    <!-- 11. FRONTEND ARCHITECTURE -->
+    <section id="frontend">
+      <h2 class="sec"><span>11.</span> Frontend Architecture</h2>
+      <h3>Page Structure</h3>
+      <table>
+        <tr><th>Page</th><th>Route</th><th>Description</th></tr>
+        <tr><td><b>Landing Page</b></td><td><code>/</code></td><td>Public landing with multi-agent demo animation</td></tr>
+        <tr><td><b>Main Console</b></td><td><code>/console</code></td><td>3-panel coaching interface (conversation, coaching, knowledge)</td></tr>
+        <tr><td><b>Dashboard</b></td><td><code>/dashboard</code></td><td>Executive overview with key metrics</td></tr>
+        <tr><td><b>Sessions</b></td><td><code>/sessions</code></td><td>Coaching session history and management</td></tr>
+        <tr><td><b>Knowledge Base</b></td><td><code>/knowledge</code></td><td>Document upload and management</td></tr>
+        <tr><td><b>Analytics</b></td><td><code>/analytics</code></td><td>Charts and performance trends</td></tr>
+        <tr><td><b>Reports</b></td><td><code>/reports</code></td><td>Post-interaction coaching reports</td></tr>
+      </table>
+      <h3>Component Architecture</h3>
+      <pre><code>App.tsx
+├── QueryClientProvider (TanStack Query)
+├── BrowserRouter
+│   ├── LandingPage (public)
+│   ├── RegisterPage (public)
+│   └── DashboardLayout (protected)
+│       ├── Sidebar
+│       ├── Header
+│       └── [Page Content via Outlet]
+│           ├── MainConsolePage
+│           │   ├── Conversation Panel
+│           │   ├── Coaching Panel
+│           │   └── Knowledge Panel
+│           ├── DashboardPage
+│           ├── SessionsPage
+│           ├── KnowledgeBasePage
+│           ├── AnalyticsPage
+│           └── ReportsPage</code></pre>
+      <h3>Real-Time Communication</h3>
+      <p>The <code>useCoachSocket</code> custom hook manages WebSocket connections: auto-connects on session start, sends customer/agent messages, receives instant coaching analysis, handles background LLM refinement updates, and provides graceful reconnection on disconnect.</p>
+    </section>
+
+    <!-- 12. API ENDPOINTS -->
+    <section id="api">
+      <h2 class="sec"><span>12.</span> API Endpoints</h2>
+      <h3>Authentication (<code>/api/v1/auth</code>)</h3>
+      <table>
+        <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+        <tr><td><b>POST</b></td><td><code>/auth/register</code></td><td>Register new user (admin, trainer, agent)</td></tr>
+        <tr><td><b>POST</b></td><td><code>/auth/login</code></td><td>Authenticate and receive JWT token</td></tr>
+        <tr><td><b>POST</b></td><td><code>/auth/forgot-password</code></td><td>Send password recovery instructions</td></tr>
+        <tr><td><b>GET</b></td><td><code>/auth/me</code></td><td>Get current user profile and role</td></tr>
+      </table>
+      <h3>Session Management (<code>/api/v1/session</code>)</h3>
+      <table>
+        <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+        <tr><td><b>POST</b></td><td><code>/session/create</code></td><td>Create coaching session</td></tr>
+        <tr><td><b>GET</b></td><td><code>/session/list</code></td><td>List user's coaching sessions</td></tr>
+        <tr><td><b>GET</b></td><td><code>/session/{id}</code></td><td>Get session messages and history</td></tr>
+        <tr><td><b>DELETE</b></td><td><code>/session/{id}</code></td><td>Delete coaching session</td></tr>
+      </table>
+      <h3>Chat &amp; Live Coaching (<code>/api/v1/chat</code>)</h3>
+      <table>
+        <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+        <tr><td><b>POST</b></td><td><code>/chat/message</code></td><td>Process chat turn through multi-agent pipeline</td></tr>
+        <tr><td><b>POST</b></td><td><code>/chat/simulator-next</code></td><td>Generate next simulator persona message</td></tr>
+        <tr><td><b>POST</b></td><td><code>/chat/manual</code></td><td>Manual mode coaching evaluation</td></tr>
+        <tr><td><b>POST</b></td><td><code>/chat/replay</code></td><td>Replay pre-loaded transcript</td></tr>
+        <tr><td><b>WS</b></td><td><code>/chat/ws/{session_id}</code></td><td>Real-time WebSocket coaching stream</td></tr>
+      </table>
+      <h3>RAG Knowledge Base (<code>/api/v1/rag</code>)</h3>
+      <table>
+        <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+        <tr><td><b>POST</b></td><td><code>/rag/upload</code></td><td>Upload document (PDF, DOCX, TXT, MD)</td></tr>
+        <tr><td><b>POST</b></td><td><code>/rag/search</code></td><td>Semantic search over knowledge base</td></tr>
+        <tr><td><b>GET</b></td><td><code>/rag/documents</code></td><td>List ingested documents</td></tr>
+        <tr><td><b>DELETE</b></td><td><code>/rag/documents/{id}</code></td><td>Remove document from vector index</td></tr>
+      </table>
+      <h3>Reports &amp; Analytics</h3>
+      <table>
+        <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+        <tr><td><b>POST</b></td><td><code>/report/generate/{session_id}</code></td><td>Generate post-interaction summary report</td></tr>
+        <tr><td><b>GET</b></td><td><code>/report/{session_id}/pdf</code></td><td>Download PDF report file</td></tr>
+        <tr><td><b>GET</b></td><td><code>/analytics/summary</code></td><td>Executive metrics and trend data</td></tr>
+      </table>
+    </section>
+
+    <!-- 13. DEPLOYMENT -->
+    <section id="deploy">
+      <h2 class="sec"><span>13.</span> Deployment</h2>
+      <table>
+        <tr><th>Piece</th><th>Technology</th><th>Deployed To</th></tr>
+        <tr><td><b>React Frontend</b></td><td>Vite + React 19 + Tailwind</td><td>Render / Vercel</td></tr>
+        <tr><td><b>FastAPI Backend</b></td><td>Uvicorn + LangGraph</td><td>Render</td></tr>
+        <tr><td><b>Database</b></td><td>SQLite (dev) / PostgreSQL (prod)</td><td>Local / Managed Postgres</td></tr>
+        <tr><td><b>Vector Store</b></td><td>ChromaDB</td><td>Local persistent storage</td></tr>
+      </table>
+      <h3>Docker Deployment</h3>
+      <pre><code>docker-compose -f docker/docker-compose.yml up --build
+
+# Services:
+# - Backend (FastAPI):  http://localhost:8000
+# - Frontend (React):   http://localhost:80
+# - Nginx:              http://localhost:80 (reverse proxy)</code></pre>
+      <div class="card">
+        <h4>Production Checklist</h4>
+        <ul>
+          <li>Change <code>SECRET_KEY</code> to a secure random value</li>
+          <li>Set proper CORS origins (replace <code>*</code> with domain)</li>
+          <li>Use PostgreSQL instead of SQLite</li>
+          <li>Configure LLM API keys</li>
+          <li>Set up SSL/TLS certificates</li>
+          <li>Configure proper logging</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 14. RUN & SETUP -->
+    <section id="run">
+      <h2 class="sec"><span>14.</span> How to Run Locally</h2>
+      <h3>Backend Setup</h3>
+      <pre><code>cd customer-support-coach
+
+# Create and activate virtual environment
+python -m venv .venv
+.venv\Scripts\activate          # Windows
+source .venv/bin/activate       # macOS / Linux
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+copy .env.example .env          # Windows
+# Add your OPENAI_API_KEY, GEMINI_API_KEY, or GROQ_API_KEY
+
+# Start backend
+uvicorn backend.main:app --reload --port 8000</code></pre>
+      <h3>Frontend Setup</h3>
+      <pre><code>cd frontend
+npm install
+npm run dev                     # http://localhost:5173</code></pre>
+      <h3>Docker (One Command)</h3>
+      <pre><code>docker-compose -f docker/docker-compose.yml up --build</code></pre>
+      <h3>Demo Accounts (Auto-Seeded)</h3>
+      <table>
+        <tr><th>Role</th><th>Email</th><th>Password</th></tr>
+        <tr><td><b>Agent</b></td><td><code>agent@coach.ai</code></td><td><code>Agent@123456</code></td></tr>
+        <tr><td><b>Trainer</b></td><td><code>trainer@coach.ai</code></td><td><code>Trainer@123456</code></td></tr>
+        <tr><td><b>Admin</b></td><td><code>admin@coach.ai</code></td><td><code>Admin@123456</code></td></tr>
+      </table>
+    </section>
+
+    <!-- 15. CONFIGURATION -->
+    <section id="config">
+      <h2 class="sec"><span>15.</span> Configuration</h2>
+      <h3>Backend Environment Variables</h3>
+      <table>
+        <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+        <tr><td><code>SECRET_KEY</code></td><td>change-in-prod</td><td>JWT signing secret</td></tr>
+        <tr><td><code>DATABASE_URL</code></td><td><code>sqlite+aiosqlite:///./sql_app.db</code></td><td>Database connection string</td></tr>
+        <tr><td><code>OPENAI_API_KEY</code></td><td>(empty)</td><td>OpenAI API key</td></tr>
+        <tr><td><code>GEMINI_API_KEY</code></td><td>(empty)</td><td>Google Gemini API key</td></tr>
+        <tr><td><code>GROQ_API_KEY</code></td><td>(empty)</td><td>Groq API key</td></tr>
+        <tr><td><code>LLM_MODEL</code></td><td><code>gpt-4o</code></td><td>Default LLM model</td></tr>
+        <tr><td><code>EMBEDDING_MODEL</code></td><td><code>sentence-transformers/all-MiniLM-L6-v2</code></td><td>RAG embedding model</td></tr>
+        <tr><td><code>CHUNK_SIZE</code></td><td><code>800</code></td><td>Document chunk size</td></tr>
+        <tr><td><code>CHUNK_OVERLAP</code></td><td><code>150</code></td><td>Chunk overlap size</td></tr>
+      </table>
+      <h3>Frontend Environment Variables</h3>
+      <table>
+        <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+        <tr><td><code>VITE_API_URL</code></td><td><code>http://localhost:8000/api/v1</code></td><td>Backend REST base URL</td></tr>
+        <tr><td><code>VITE_WS_URL</code></td><td><code>ws://localhost:8000</code></td><td>Backend WebSocket base URL</td></tr>
+      </table>
+    </section>
+
+    <!-- 16. TESTING -->
+    <section id="testing">
+      <h2 class="sec"><span>16.</span> Testing</h2>
+      <pre><code># From project root
+cd customer-support-coach
+pytest
+
+# Run specific test file
+pytest tests/test_backend.py
+pytest tests/test_agents.py
+pytest tests/test_rag.py
+pytest tests/test_websocket_chat.py</code></pre>
+      <table>
+        <tr><th>Test File</th><th>Coverage Area</th></tr>
+        <tr><td><code>test_backend.py</code></td><td>API endpoint tests (auth, session, chat, rag, report)</td></tr>
+        <tr><td><code>test_agents.py</code></td><td>Agent logic tests (combined, coaching, simulator, escalation)</td></tr>
+        <tr><td><code>test_rag.py</code></td><td>RAG pipeline tests (chunking, ingestion, vector search)</td></tr>
+        <tr><td><code>test_backend_rag.py</code></td><td>Integration tests for RAG + API</td></tr>
+        <tr><td><code>test_websocket_chat.py</code></td><td>WebSocket real-time coaching tests</td></tr>
+      </table>
+    </section>
+
+    <!-- 17. Q&A PREP -->
+    <section id="qa">
+      <h2 class="sec"><span>17.</span> Q&amp;A Prep — Likely Questions &amp; Answers</h2>
+      <div class="qa"><b>Q1. What problem does NovaDesk AI solve?</b><p>Coaching and QA in support teams happen after the call. NovaDesk AI moves coaching into the moment — every message is analyzed in real-time so the agent knows sentiment, the right KB article, the best reply, and risk level before sending.</p></div>
+      <div class="qa"><b>Q2. Why a multi-agent system?</b><p>One agent = one responsibility (classify, coach, monitor, retrieve). This makes prompts small and testable, lets agents run in parallel, and gives clear fault isolation — if escalation detection fails, coaching still works.</p></div>
+      <div class="qa"><b>Q3. How is the RAG implemented?</b><p>ChromaDB with sentence-transformers embeddings (all-MiniLM-L6-v2), 800-char chunks with 150 overlap, cosine similarity search. Documents are auto-seeded on startup and can be uploaded via the API.</p></div>
+      <div class="qa"><b>Q4. What happens if no LLM API key is set?</b><p>The system falls back to deterministic rule-based logic: keyword matching for intent, sentiment via keyword counting, pre-defined replies, and threshold-based escalation. The app never crashes — it degrades gracefully.</p></div>
+      <div class="qa"><b>Q5. How is real-time coaching delivered?</b><p>Via WebSocket connections. The frontend sends messages, the backend runs them through the LangGraph pipeline, and coaching feedback (scores, suggested replies, escalation alerts) is streamed back instantly.</p></div>
+      <div class="qa"><b>Q6. What are the three interaction modes?</b><p><b>Simulator:</b> Practice against 6 AI customer personas. <b>Manual:</b> Paste real customer messages for coaching. <b>Replay:</b> Analyze past transcripts turn-by-turn.</p></div>
+      <div class="qa"><b>Q7. How is this different from a chatbot?</b><p>A chatbot replaces the agent. NovaDesk AI empowers the agent — it is a copilot that coaches, flags risks, and audits quality while the human stays in charge.</p></div>
+      <div class="qa"><b>Q8. What's the LangGraph workflow?</b><p>A two-node pipeline: Knowledge RAG (fast retrieval, no LLM) followed by Combined Analysis (single LLM call for all analysis). Optimized for minimal latency.</p></div>
+    </section>
+
+    <!-- 18. GLOSSARY -->
+    <section id="glossary">
+      <h2 class="sec"><span>18.</span> Glossary</h2>
+      <table>
+        <tr><th>Term</th><th>Meaning</th></tr>
+        <tr><td><b>Agent</b></td><td>A single-responsibility AI module with its own system prompt</td></tr>
+        <tr><td><b>Orchestrator</b></td><td>The LangGraph controller that runs the per-turn pipeline</td></tr>
+        <tr><td><b>Turn</b></td><td>One customer message + the resulting analysis from all agents</td></tr>
+        <tr><td><b>RAG</b></td><td>Retrieval-Augmented Generation — retrieve docs, then generate answers</td></tr>
+        <tr><td><b>ChromaDB</b></td><td>Vector database used for storing and searching document embeddings</td></tr>
+        <tr><td><b>CSAT</b></td><td>Customer satisfaction score</td></tr>
+        <tr><td><b>Escalation</b></td><td>Conversation reaching a risk level needing manager intervention</td></tr>
+        <tr><td><b>RBAC</b></td><td>Role-Based Access Control (Admin, Trainer, Agent)</td></tr>
+        <tr><td><b>WebSocket</b></td><td>Protocol for real-time bidirectional communication</td></tr>
+        <tr><td><b>LangGraph</b></td><td>Framework for building multi-agent workflows as directed graphs</td></tr>
+      </table>
+    </section>
+
+    <footer>
+      NovaDesk AI — Multi-Agent Real-Time Customer Support Coaching Platform.<br>
+      Built with FastAPI, LangGraph, ChromaDB RAG, React, and Tailwind CSS.
+    </footer>
+  </main>
+</div>
+
+<script>
+  const links = document.querySelectorAll('nav a');
+  const sections = [...document.querySelectorAll('main section')];
+  function onScroll() {
+    let current = sections[0].id;
+    for (const s of sections) { if (window.scrollY >= s.offsetTop - 120) current = s.id; }
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+  }
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+</script>
+</body>
+</html>

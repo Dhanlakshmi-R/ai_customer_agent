@@ -3,7 +3,6 @@
 ## AI-Powered Customer Support Assistant with Live Response Guidance
 
 **Version:** 1.0.0  
-**Author:** Dhanlaxmi  
 **License:** MIT  
 **Date:** 2026
 
