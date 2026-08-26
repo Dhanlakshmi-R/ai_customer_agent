@@ -351,7 +351,7 @@ const AuthModal: React.FC<{
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
-          onClick={onClose}
+          onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
           <motion.div
             initial={{ opacity: 0, y: 26, scale: 0.96 }}
@@ -360,6 +360,7 @@ const AuthModal: React.FC<{
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
             className="login-ring w-full max-w-md"
+            style={{ overflow: 'visible' }}
           >
             <div className="relative px-7 py-7 sm:px-8 sm:py-8 space-y-5 max-h-[90vh] overflow-y-auto">
               <button
