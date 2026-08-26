@@ -1,4 +1,5 @@
 import os
+import threading
 import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -27,9 +28,9 @@ async def lifespan(app: FastAPI):
         agent = await repo.get_user_by_email("agent@coach.ai")
         if not agent:
             await repo.create_user("agent@coach.ai", "Agent@123456", "Support Agent Demo", "agent")
-            
-    # Auto-seed Knowledge Base in ChromaDB if empty
-    auto_seed_kb()
+
+    # Auto-seed Knowledge Base in ChromaDB if empty (non-blocking)
+    threading.Thread(target=auto_seed_kb, daemon=True).start()
 
     yield
 

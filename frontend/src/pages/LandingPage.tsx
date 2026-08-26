@@ -322,7 +322,7 @@ const AuthModal: React.FC<{
       navigate('/dashboard');
     } catch (err: any) {
       if (!err.response) {
-        setError('Cannot reach the server. Please try again later.');
+        setError('Cannot reach the server. The backend may be starting up — please wait a moment and try again.');
       } else {
         setError(err.response?.data?.detail || 'Authentication failed. Please try again.');
       }
@@ -709,10 +709,11 @@ export const LandingPage: React.FC = () => {
         <AnimatePresence>
           {menuOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden overflow-hidden border-t border-white/5 bg-[#070a12]/95 backdrop-blur-xl"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden border-t border-white/5 bg-[#070a12]/95 backdrop-blur-xl"
             >
               <div className="px-6 py-4 space-y-1">
                 {NAV_LINKS.map((l) => (

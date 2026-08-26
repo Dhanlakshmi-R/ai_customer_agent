@@ -15,23 +15,17 @@ class RAGVectorStore:
     def _init_chroma(self):
         try:
             import chromadb
-            from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
             self.chroma_client = chromadb.PersistentClient(path=self.persist_directory)
-            self.embedding_function = SentenceTransformerEmbeddingFunction(
-                model_name=settings.EMBEDDING_MODEL,
-            )
+            self.embedding_function = None  # Use ChromaDB default ONNX embeddings (no PyTorch needed)
             try:
                 self.collection = self.chroma_client.get_or_create_collection(
                     name="support_knowledge_base",
-                    embedding_function=self.embedding_function,
-                    metadata={"embedding_model": settings.EMBEDDING_MODEL},
+                    metadata={"hnsw:space": "cosine"},
                 )
             except ValueError as error:
                 if "embedding function" not in str(error).lower():
                     raise
-                # Preserve existing persisted collections created with Chroma's
-                # prior default embedding configuration.
                 self.collection = self.chroma_client.get_collection(name="support_knowledge_base")
         except Exception as e:
             print(f"[RAGVectorStore] ChromaDB native init warning (using in-memory fallback): {e}")

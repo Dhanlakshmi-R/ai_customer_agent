@@ -28,7 +28,7 @@ export const RegisterPage: React.FC = () => {
       navigate('/dashboard');
     } catch (err: any) {
       if (!err.response) {
-        setError('Cannot reach the server. Please try again later.');
+        setError('Cannot reach the server. The backend may be starting up — please wait a moment and try again.');
       } else {
         setError(err.response?.data?.detail || 'Registration failed.');
       }
