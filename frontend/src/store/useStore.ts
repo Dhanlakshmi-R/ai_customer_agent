@@ -23,17 +23,9 @@ interface AppState {
   theme: 'dark' | 'light';
   toggleTheme: () => void;
 
-  // Reader Language Preference (for message read-aloud / TTS)
-  readerLang: string;
-  setReaderLang: (lang: string) => void;
-
   // Mobile navigation drawer (visible below the md breakpoint)
   mobileNavOpen: boolean;
   setMobileNavOpen: (open: boolean) => void;
-
-  // Persistent translation cache keyed by `${lang}:${id}` (id = message id or `suggested:<text>`)
-  translations: Record<string, string>;
-  setTranslations: (map: Record<string, string> | ((prev: Record<string, string>) => Record<string, string>)) => void;
 
   // Selected Knowledge Article Modal
   selectedCitation: any | null;
@@ -93,24 +85,6 @@ export const useStore = create<AppState>((set) => ({
   selectedCitation: null,
   setSelectedCitation: (citation) => set({ selectedCitation: citation }),
 
-  readerLang: localStorage.getItem('coach_reader_lang') || 'en',
-  setReaderLang: (lang) => {
-    localStorage.setItem('coach_reader_lang', lang);
-    set({ readerLang: lang });
-  },
-
   mobileNavOpen: false,
   setMobileNavOpen: (open) => set({ mobileNavOpen: open }),
-
-  translations: JSON.parse(localStorage.getItem('coach_translations') || '{}'),
-  setTranslations: (map) => set((state) => {
-    const incoming = typeof map === 'function' ? map(state.translations) : map;
-    const next = { ...state.translations, ...incoming };
-    try {
-      localStorage.setItem('coach_translations', JSON.stringify(next));
-    } catch {
-      /* storage full / unavailable — cache stays in memory */
-    }
-    return { translations: next };
-  }),
 }));

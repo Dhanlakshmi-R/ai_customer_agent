@@ -17,12 +17,11 @@ import {
   Square,
   AlertOctagon,
   Volume2,
-  Languages,
   ThumbsUp,
   ThumbsDown
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
-import { READER_LANGUAGES, speakText, stopSpeaking, readerLabel } from '../utils/speech';
+import { speakText, stopSpeaking } from '../utils/speech';
 import { api } from '../services/api';
 import { KnowledgeModal } from '../components/KnowledgeModal';
 import { TranscriptPicker, TranscriptDetail } from '../components/TranscriptPicker';
@@ -45,10 +44,6 @@ export const MainConsolePage: React.FC = () => {
     currentCoaching, 
     setCurrentCoaching,
     setSelectedCitation,
-    readerLang,
-    setReaderLang,
-    translations,
-    setTranslations 
   } = useStore();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -368,16 +363,11 @@ export const MainConsolePage: React.FC = () => {
     }
   };
 
-  // Translated Recommended Response (when a non-English language is active).
   const suggestedText = (): string => {
-    const src = currentCoaching?.suggested_reply;
-    if (!src) return '';
-    return translations[`${readerLang}:suggested:${src}`] || src;
+    return currentCoaching?.suggested_reply || '';
   };
 
   const handleApplySuggestedReply = () => {
-    // Use the ORIGINAL reply so the stored agent message stays in the source
-    // language (translation is display-only and reversible by switching languages).
     if (currentCoaching?.suggested_reply) {
       setInputText(currentCoaching.suggested_reply);
     }
@@ -395,78 +385,6 @@ export const MainConsolePage: React.FC = () => {
       setSpeakingMsgId((cur) => (cur === msgId ? null : cur));
     });
   };
-
-  // Display + speak the translated text when a non-English language is active.
-  const msgText = (msg: { id: string; content: string }): string => {
-    if (readerLang === 'en') return msg.content;
-    return translations[`${readerLang}:${msg.id}`] || msg.content;
-  };
-
-  // Translate on language change (or as new messages arrive) using the persistent
-  // store cache. Requests are deduped by key and results are always merged back in,
-  // so fast streaming messages no longer cancel in-flight translations.
-  const translationQueueRef = useRef<Set<string>>(new Set());
-  const translatePendingRef = useRef(false);
-
-  useEffect(() => {
-    if (readerLang === 'en') return;
-
-    const pending: Array<{ id: string; text: string }> = [];
-    const suggestedReply = currentCoaching?.suggested_reply;
-    if (suggestedReply) {
-      const key = `${readerLang}:suggested:${suggestedReply}`;
-      if (!translations[key] && !translationQueueRef.current.has(key)) pending.push({ id: key, text: suggestedReply });
-    }
-    for (let i = messages.length - 1; i >= 0; i--) {
-      const m = messages[i];
-      const key = `${readerLang}:${m.id}`;
-      if (!translations[key] && !translationQueueRef.current.has(key) && m.content) {
-        pending.push({ id: key, text: m.content });
-      }
-    }
-    if (pending.length === 0) return;
-
-    pending.forEach((p) => translationQueueRef.current.add(p.id));
-    const delay = translatePendingRef.current ? 250 : 0;
-
-    const translateBatch = async (batch: Array<{ id: string; text: string }>) => {
-      try {
-        const res = await api.post('/chat/translate', {
-          target_language: readerLabel(readerLang),
-          messages: batch,
-        });
-        if (res.data?.translations?.length) {
-          setTranslations((prev: Record<string, string>) => {
-            const map: Record<string, string> = { ...prev };
-            (res.data.translations as Array<{ id: string; text: string }>).forEach((t) => {
-              if (t) map[t.id] = t.text;
-            });
-            return map;
-          });
-        }
-      } catch (err) {
-        console.error('Translation failed:', err);
-      } finally {
-        batch.forEach((b) => translationQueueRef.current.delete(b.id));
-      }
-    };
-
-    const flush = async () => {
-      if (translatePendingRef.current) return;
-      translatePendingRef.current = true;
-      try {
-        await translateBatch(pending.slice(0, 3));
-        for (let i = 3; i < pending.length; i += 5) {
-          await translateBatch(pending.slice(i, i + 5));
-        }
-      } finally {
-        translatePendingRef.current = false;
-      }
-    };
-
-    const timer = setTimeout(flush, delay);
-    return () => clearTimeout(timer);
-  }, [readerLang, messages, translations, currentCoaching, setTranslations]);
 
   useEffect(() => {
     return () => stopSpeaking();
@@ -540,26 +458,6 @@ export const MainConsolePage: React.FC = () => {
             ))}
           </div>
 
-          {/* Read-Aloud Language Selector */}
-          <div className="flex items-center gap-1.5">
-            <Languages className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-            <select
-              value={readerLang}
-              onChange={(e) => {
-                stopSpeaking();
-                setSpeakingMsgId(null);
-                setReaderLang(e.target.value);
-              }}
-              title="Choose the language for reading messages aloud"
-              className="ui-select !w-auto !py-1.5"
-            >
-              {READER_LANGUAGES.map((lang) => (
-                <option key={lang.id} value={lang.id}>
-                  {lang.label} · {lang.native}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -712,8 +610,8 @@ export const MainConsolePage: React.FC = () => {
                       <span className="font-semibold capitalize">{msg.sender}</span>
                       <span className="flex items-center gap-2">
                         <button
-                          onClick={() => handleReadAloud(msg.id, msgText(msg))}
-                          title={speakingMsgId === msg.id ? 'Stop reading' : `Read aloud (${readerLabel(readerLang)})`}
+                          onClick={() => handleReadAloud(msg.id, msg.content)}
+                          title={speakingMsgId === msg.id ? 'Stop reading' : 'Read aloud'}
                           className={`flex items-center gap-1 rounded px-1.5 py-0.5 transition ${
                             speakingMsgId === msg.id
                               ? 'text-white' 
@@ -729,12 +627,7 @@ export const MainConsolePage: React.FC = () => {
                         <span>Turn #{msg.turn_index}</span>
                       </span>
                     </div>
-                    <p>{msgText(msg)}</p>
-                    {readerLang !== 'en' && (
-                      <div className="mt-1 text-[9px] italic" style={{ color: msg.sender === 'agent' ? 'rgba(255,255,255,.7)' : 'var(--brand)' }}>
-                        Reading in {readerLabel(readerLang)}
-                      </div>
-                    )}
+                    <p>{msg.content}</p>
                   </div>
                   {msg.sender === 'agent' && (
                     <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0" style={{ background: 'color-mix(in srgb, var(--brand) 18%, transparent)', color: 'var(--brand)', border: '1px solid color-mix(in srgb, var(--brand) 30%, transparent)' }}>
@@ -916,7 +809,7 @@ export const MainConsolePage: React.FC = () => {
                       onClick={() => {
                         if (currentCoaching?.suggested_reply) handleReadAloud('__suggested_reply__', suggestedText());
                       }}
-                      title={speakingMsgId === '__suggested_reply__' ? 'Stop reading' : `Read aloud (${readerLabel(readerLang)})`}
+                      title={speakingMsgId === '__suggested_reply__' ? 'Stop reading' : 'Read aloud'}
                       className={`ui-btn px-2.5 py-1 text-white transition ${
                         speakingMsgId === '__suggested_reply__' ? '' : 'ui-btn-ghost text-[var(--text-primary)]'
                       }`}

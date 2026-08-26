@@ -10,7 +10,6 @@ import {
   EyeOff,
   Bot,
   ShieldCheck,
-  Languages,
   Rocket,
   CheckCircle2,
   Zap,
@@ -24,6 +23,7 @@ import {
   Glasses,
   AudioLines,
   Clock3,
+  Volume2,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { api } from '../services/api';
@@ -31,12 +31,11 @@ import { api } from '../services/api';
 const FEATURES = [
   { icon: BrainCircuit, title: 'Live AI Coaching', desc: 'Intent, sentiment & empathy scored on every turn.' },
   { icon: ShieldCheck, title: 'Escalation Radar', desc: 'Risk alerts before things go sideways.' },
-  { icon: Languages, title: 'Translate & Read Aloud', desc: 'Work in 8+ languages instantly.' },
+  { icon: Volume2, title: 'Read Aloud', desc: 'Listen to messages with built-in text-to-speech.' },
   { icon: Rocket, title: 'Simulator & Replay', desc: 'Practice against realistic personas.' },
 ];
 
 const STATS = [
-  { value: '8+', label: 'Languages' },
   { value: '99%', label: 'Uptime' },
   { value: '24/7', label: 'AI Coaching' },
   { value: '<1s', label: 'Coach latency' },
