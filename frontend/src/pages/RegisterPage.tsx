@@ -27,7 +27,11 @@ export const RegisterPage: React.FC = () => {
       setUser(res.data.user, res.data.access_token);
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Registration failed.');
+      if (!err.response) {
+        setError('Cannot reach the server. Please try again later.');
+      } else {
+        setError(err.response?.data?.detail || 'Registration failed.');
+      }
     } finally {
       setLoading(false);
     }

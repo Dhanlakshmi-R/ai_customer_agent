@@ -321,7 +321,11 @@ const AuthModal: React.FC<{
       onSuccess();
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Authentication failed. Please try again.');
+      if (!err.response) {
+        setError('Cannot reach the server. Please try again later.');
+      } else {
+        setError(err.response?.data?.detail || 'Authentication failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -588,6 +592,15 @@ export const LandingPage: React.FC = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
 
   const [demoInput, setDemoInput] = useState('');
   const [demoPhase, setDemoPhase] = useState<'idle' | 'routing' | 'done'>('idle');

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -58,6 +58,15 @@ export const MobileNav: React.FC = () => {
   const navigate = useNavigate();
 
   const close = () => setMobileNavOpen(false);
+
+  useEffect(() => {
+    if (mobileNavOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileNavOpen]);
 
   const handleLogout = () => {
     close();
@@ -168,7 +177,7 @@ export const MobileNav: React.FC = () => {
             <button
               onClick={handleLogout}
               title="Logout"
-              className="p-2 rounded-lg hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition shrink-0"
+              className="p-2.5 rounded-lg hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition shrink-0"
             >
               <LogOut className="w-4 h-4" />
             </button>
