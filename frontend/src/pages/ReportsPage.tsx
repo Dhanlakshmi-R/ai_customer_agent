@@ -49,7 +49,8 @@ export const ReportsPage: React.FC = () => {
 
   const handleDownloadPdf = () => {
     if (!selectedSessionId) return;
-    window.open(`http://localhost:8000/api/v1/report/${selectedSessionId}/pdf`, '_blank');
+    const base = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || 'http://127.0.0.1:8000/api/v1';
+    window.open(`${base}/report/${selectedSessionId}/pdf`, '_blank');
   };
 
   return (

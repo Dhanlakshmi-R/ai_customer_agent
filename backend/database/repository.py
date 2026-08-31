@@ -6,6 +6,16 @@ from sqlalchemy import select, func, desc, delete
 from sqlalchemy.orm import selectinload
 
 from backend.database.models import User, Session, Message, Document, CoachingAnalysis, CoachingFeedback, Report, SystemSetting
+
+def _session_message_count_subquery():
+    """Scalar subquery counting messages per session, so callers can list
+    sessions with a message count without loading every message body."""
+    return (
+        select(func.count(Message.id))
+        .where(Message.session_id == Session.id)
+        .correlate(Session)
+        .scalar_subquery()
+    )
 from backend.authentication.passlib_utils import get_password_hash
 
 class Repository:
@@ -74,12 +84,24 @@ class Repository:
         )
         return result.scalars().first()
 
-    async def list_sessions(self, user_id: Optional[str] = None, limit: int = 50) -> List[Session]:
-        query = select(Session).options(selectinload(Session.messages)).order_by(desc(Session.created_at)).limit(limit)
+    async def get_session_row(self, session_id: str) -> Optional[Session]:
+        """Fetches just the Session row (no messages/analyses) — used where only
+        existence/ownership matters, e.g. delete or status checks."""
+        result = await self.db.execute(select(Session).where(Session.id == session_id))
+        return result.scalars().first()
+
+    async def list_sessions(self, user_id: Optional[str] = None, limit: int = 50) -> list:
+        """Returns (Session, message_count) tuples ordered newest first, without
+        eagerly loading every message body (which made the dashboard sluggish)."""
+        query = (
+            select(Session, _session_message_count_subquery().label("message_count"))
+            .order_by(desc(Session.created_at))
+            .limit(limit)
+        )
         if user_id:
             query = query.where(Session.user_id == user_id)
         result = await self.db.execute(query)
-        return result.scalars().all()
+        return result.all()
 
     async def update_session_status(self, session_id: str, status: str) -> Optional[Session]:
         sess = await self.get_session(session_id)

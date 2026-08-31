@@ -51,7 +51,7 @@ async def register(data: RegisterSchema, db: AsyncSession = Depends(get_db)):
 async def login(data: LoginSchema, db: AsyncSession = Depends(get_db)):
     repo = Repository(db)
     user = await repo.get_user_by_email(data.email)
-    if not user or not verify_password(data.password, user.hashed_password):
+    if not user or not await verify_password(data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password.")
     token = create_access_token({"sub": user.id, "email": user.email, "role": user.role})
     return {

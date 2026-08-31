@@ -47,7 +47,7 @@ export const useCoachSocket = ({ sessionId, onTurnComplete }: UseCoachSocketOpti
     }
 
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const apiHost = import.meta.env.VITE_WS_URL || import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const apiHost = import.meta.env.VITE_WS_URL || import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
     let wsUrl = '';
     if (apiHost.startsWith('http://') || apiHost.startsWith('https://')) {

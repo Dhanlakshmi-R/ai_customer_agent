@@ -65,10 +65,10 @@ async def list_sessions(
             "scenario": s.scenario,
             "persona": s.persona,
             "status": s.status,
-            "message_count": len(s.messages),
+            "message_count": count,
             "created_at": s.created_at
         }
-        for s in sessions
+        for s, count in sessions
     ]
 
 @router.get("/{session_id}")
@@ -135,7 +135,7 @@ async def delete_session(
     current_user: User = Depends(get_current_user)
 ):
     repo = Repository(db)
-    session = await repo.get_session(session_id)
+    session = await repo.get_session_row(session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found.")
     if session.user_id != current_user.id:
